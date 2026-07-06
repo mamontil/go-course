@@ -1,0 +1,28 @@
+# Секреты и конфигурация
+.env
+*.env
+
+# Локальные SSH ключи (которые ты случайно сгенерировал в папке проекта)
+go
+go.pub
+
+# Базы данных SQLite и их временные файлы журналов (WAL/SHM)
+*.db
+*.db-wal
+*.db-shm
+
+# Скомпилированные бинарники (под Linux/Windows/Mac)
+main
+main.exe
+main.test
+*.out
+*.exe
+
+# Локальные папки IDE (если используешь GoLand / VS Code / Cursor)
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp

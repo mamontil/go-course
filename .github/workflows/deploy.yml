@@ -1,0 +1,44 @@
+name: Deploy Go Course
+
+# Запуск по кнопке из интерфейса ИЛИ автоматически при пуше в ветку main
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22' # Укажи свою версию Go
+
+      - name: Build Go Binary
+        run: |
+          GOOS=linux GOARCH=amd64 go build -o main main.go
+
+      - name: Deploy to Server via SSH
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "main,frontend/"
+          target: "/root/go-course/"
+          overwrite: true
+
+      - name: Restart Systemd Service
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            systemctl restart go-course
+            systemctl status go-course | grep -E "Active:"

@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Интерактивный курс Go для начинающих | Учись Golang бесплатно с нуля</title>
+    <meta name="description" content="Бесплатный интерактивный тренажер языка Go (Golang). Обучение программированию с нуля прямо в браузере. Подходит для новичков, взрослых и детей. Прокачай мышечную память синтаксиса!">
+    <meta name="keywords" content="go курс, golang обучение, тренажер go, программирование для детей, выучить go с нуля, интерактивный учебник golang">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+</head>
+<body>
+
+<div id="landing-view">
+    <header class="landing-header">
+        <div class="logo">🚀 Go-Тренажер</div>
+        <div class="auth-buttons">
+            <button class="btn btn-nav" onclick="showAuthModal('login')">Войти</button>
+            <button class="btn btn-run" onclick="showAuthModal('register')">Начать бесплатно</button>
+        </div>
+    </header>
+
+    <section class="hero-section">
+        <div class="hero-content">
+            <span class="badge">🔥 Самый востребованный язык в IT</span>
+            <h1>Выучи язык Go на практике прямо в браузере</h1>
+            <p class="hero-lead">
+                Интерактивный тренажер «без воды». Пиши код с первых секунд по умным трафаретам.
+                <strong>Доступно каждому: справятся даже дети от 10 лет!</strong>
+                Освой синтаксис Go, прокачай мышечную память и открой дверь в высокооплачиваемую backend-разработку.
+            </p>
+            <div class="cta-block">
+                <button class="btn btn-cta" onclick="showAuthModal('register')">Создать личный кабинет и начать ➜</button>
+                <p class="cta-subtext">Регистрация за 10 секунд. Без ввода банковских карт. Полностью бесплатно.</p>
+            </div>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <h3>💻 Пиши код сразу</h3>
+                <p>Никаких тяжелых настроек сред разработки. Компилятор Go работает прямо у нас на сервере.</p>
+            </div>
+            <div class="feature-card">
+                <h3>👶 Доступно даже детям</h3>
+                <p>Уникальная механика блеклых трафаретов-подсказок плавно убирает подсказки по мере твоего прогресса.</p>
+            </div>
+            <div class="feature-card">
+                <h3>🔒 Защита от перескакивания</h3>
+                <p>Твой прогресс сохраняется в базу данных. Следующий урок откроется только тогда, когда компилятор примет код текущего.</p>
+            </div>
+        </div>
+    </section>
+    <section class="seo-section" style="max-width: 1200px; margin: 60px auto; padding: 0 20px; font-family: sans-serif;">
+        <h2 style="text-align: center; color: #58a6ff; margin-bottom: 40px; font-size: 28px;">Программа базового курса (Бесплатно)</h2>
+
+        <div class="program-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 60px;">
+            <div style="background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 20px;">
+                <h4 style="color: #f0f6fc; margin: 0 0 10px 0;">🌱 Модуль 1: Основы синтаксиса</h4>
+                <p style="color: #8b949e; font-size: 14px; line-height: 1.5; margin: 0;">Переменные, типы данных, константы, базовая математика и вывод в консоль.</p>
+            </div>
+            <div style="background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 20px;">
+                <h4 style="color: #f0f6fc; margin: 0 0 10px 0;">🔄 Модуль 2: Управление потоком</h4>
+                <p style="color: #8b949e; font-size: 14px; line-height: 1.5; margin: 0;">Условные операторы if/else, единственный цикл for в Go и switch-конструкции.</p>
+            </div>
+            <div style="background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 20px;">
+                <h4 style="color: #f0f6fc; margin: 0 0 10px 0;">📦 Модуль 3: Сложные типы</h4>
+                <p style="color: #8b949e; font-size: 14px; line-height: 1.5; margin: 0;">Работа с базовыми массивами, создание функций, возврат нескольких значений.</p>
+            </div>
+            <div style="background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 20px;">
+                <h4 style="color: #f0f6fc; margin: 0 0 10px 0;">🏗️ Модуль 4: ООП по-голангски</h4>
+                <p style="color: #8b949e; font-size: 14px; line-height: 1.5; margin: 0;">Объявление структур, создание методов для типов и магия интерфейсов.</p>
+            </div>
+        </div>
+
+        <h2 style="text-align: center; color: #58a6ff; margin-bottom: 30px; font-size: 28px;">Часто задаваемые вопросы</h2>
+        <div class="faq-block" style="max-width: 800px; margin: 0 auto 60px auto;">
+            <div style="border-bottom: 1px solid #30363d; padding: 15px 0;">
+                <h4 style="color: #f0f6fc; margin: 0 0 8px 0; font-size: 16px;">Кому подойдет этот тренажер?</h4>
+                <p style="color: #8b949e; font-size: 14px; line-height: 1.6; margin: 0;">Тренажер спроектирован для абсолютных новичков. Мы используем систему подсказок-трафаретов, которая позволяет нарабатывать мышечную память синтаксиса без унылой зубрежки теории.</p>
+            </div>
+            <div style="border-bottom: 1px solid #30363d; padding: 15px 0;">
+                <h4 style="color: #f0f6fc; margin: 0 0 8px 0; font-size: 16px;">Нужно ли устанавливать Go на компьютер?</h4>
+                <p style="color: #8b949e; font-size: 14px; line-height: 1.6; margin: 0;">Нет, ничего настраивать и скачивать не нужно. Весь код компилируется на удаленном сервере и выдает результат прямо в окно встроенного терминала.</p>
+            </div>
+        </div>
+    </section>
+</div>
+
+<div id="app-view" style="display: none;">
+    <header>
+        <h1>Быстрый Старт в Go 🚀</h1>
+        <div class="header-right">
+            <span id="pro-badge" style="display: none; background: #238636; color: #fff; padding: 4px 8px; font-size: 12px; font-weight: bold; border-radius: 4px; margin-right: 15px;">PRO ACCOUNT</span>
+
+            <select id="lesson-selector" class="navigation-select" onchange="switchLesson(this.value)">
+            </select>
+            <button class="btn-logout" onclick="logout()">Выйти</button>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <div class="theory-panel" id="theory-content"></div>
+
+        <div class="code-panel">
+            <div class="editor-container">
+                <div class="editor-header">main.go</div>
+                <div class="editor-wrapper" id="editor-code-structure"></div>
+                <div class="controls-row">
+                    <button class="btn btn-run" id="run-btn" onclick="runCode()">Запустить код ▶</button>
+                    <button class="btn btn-next" id="next-btn" onclick="nextLesson()">Следующий урок ➜</button>
+                </div>
+            </div>
+
+            <div class="terminal-container">
+                <div class="terminal-header">ВЫВОД КОМПИЛЯТОРА GO (PLAYGROUND API):</div>
+                <div id="output" class="terminal-output">Напиши код по трафарету и нажми кнопку запуска...</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <div>© 2026 Интерактивный Go-Тренажер. Все права защищены.</div>
+    <div>
+        Официальные ресурсы:
+        <a href="https://go.dev/" target="_blank">go.dev</a>
+        <a href="https://go.dev/doc/effective_go" target="_blank">Effective Go</a>
+        <a href="#" onclick="openModal(event)">Политика конфиденциальности (ФЗ-152)</a>
+    </div>
+</footer>
+
+<div id="auth-modal" class="modal">
+    <div class="modal-content auth-form-container">
+        <button class="close-modal" onclick="closeAuthModal()">✕</button>
+        <h2 id="auth-modal-title">Вход в систему</h2>
+
+        <div id="auth-error-msg" class="error" style="margin-bottom: 15px; display: none;"></div>
+
+        <form id="real-auth-form" onsubmit="handleAuthSubmit(event)">
+            <div class="form-group">
+                <label>Ваш Email:</label>
+                <input type="email" id="auth-email" required placeholder="example@mail.ru">
+            </div>
+            <div class="form-group">
+                <label>Пароль:</label>
+                <input type="password" id="auth-password" required placeholder="••••••••">
+            </div>
+
+            <div class="form-group checkbox-group" id="consent-wrapper">
+                <input type="checkbox" id="auth-consent" required checked>
+                <label for="auth-consent">
+                    Я согласен на обработку <a href="#" onclick="openModal(event)">персональных данных</a> (Email) для сохранения прогресса обучения.
+                </label>
+            </div>
+
+            <button type="submit" class="btn btn-cta" id="auth-submit-btn" style="width: 100%; margin-top: 15px;">Войти</button>
+        </form>
+
+        <p class="auth-toggle-text">
+            <span id="auth-toggle-desc">Еще нет аккаунта?</span>
+            <a href="#" id="auth-toggle-link" onclick="toggleAuthMode()">Зарегистрироваться</a>
+        </p>
+    </div>
+</div>
+
+<div id="privacy-modal" class="modal">
+    <div class="modal-content">
+        <button class="close-modal" onclick="closeModal()">Закрыть</button>
+        <h2>Политика конфиденциальности</h2>
+        <p>Настоящая политика конфиденциальности действует в отношении всех персональных данных, которые администрация платформы может получить от пользователя во время регистрации.</p>
+        <h3>1. Собираемые данные</h3>
+        <p>Для обеспечения регистрации, аутентификации и сохранения текущего прогресса обучения в рамках интерактивного тренажера, мы запрашиваем исключительно:</p>
+        <ul>
+            <li>Адрес электронной почты (Email);</li>
+            <li>Пароль для доступа к аккаунту.</li>
+        </ul>
+        <p>Мы не собираем имена, фамилии, номера телефонов, паспортные данные или геолокацию наших учеников, что исключает возможность однозначной идентификации физического лица согласно ФЗ-152.</p>
+        <h3>2. Цель обработки</h3>
+        <p>Данные используются исключительно для авторизации на сайте и ведения логов прохождения уроков. Мы гарантируем безопасность хранения ваших данных и обязуемся не передавать их третьим лицам.</p>
+    </div>
+</div>
+
+<script type="module" src="/js/lessons.js"></script>
+
+<script>
+    let currentLessonIndex = 0;
+    let authMode = 'login';
+    let userPassedLessonIds = [];
+    let isProUser = false;
+
+    function checkAuthOnLoad() {
+        // Показываем куки, если пользователь ещё не нажимал ОК
+        if (!localStorage.getItem('cookie_accepted')) {
+            const cookieNotice = document.getElementById('cookie-notice');
+            if (cookieNotice) cookieNotice.style.display = 'flex';
+        }
+
+        fetch('/api/lessons/progress')
+            .then(res => {
+                if (res.ok) return res.json();
+                throw new Error("Не авторизован");
+            })
+            .then(data => {
+                userPassedLessonIds = data.passed_lessons || [];
+                isProUser = data.is_pro_active || false;
+                showAppView();
+
+                // ХАК: Если пользователь прошел все 36 бесплатных уроков (id последнего бесплатного равен 36),
+                // и при этом он еще не имеет статуса PRO — сразу выкидываем модалку при каждом заходе в систему!
+                if (userPassedLessonIds.includes(36) && !isProUser) {
+                    const paywallModal = document.getElementById('paywall-modal');
+                    if (paywallModal) {
+                        paywallModal.style.display = 'flex';
+                    }
+                }
+            })
+            .catch(() => {
+                showLandingView();
+            });
+    }
+
+    // Функция закрытия куки-плашки
+    function acceptCookies() {
+        localStorage.setItem('cookie_accepted', 'true');
+        const cookieNotice = document.getElementById('cookie-notice');
+        if (cookieNotice) cookieNotice.style.display = 'none';
+    }
+
+    function showLandingView() {
+        document.getElementById('landing-view').style.display = 'block';
+        document.getElementById('app-view').style.display = 'none';
+    }
+
+    function showAppView() {
+        document.getElementById('landing-view').style.display = 'none';
+        document.getElementById('app-view').style.display = 'block';
+        initApp();
+    }
+
+    function initApp() {
+        const selector = document.getElementById('lesson-selector');
+
+        // Управление бейджем PRO в шапке
+        const badge = document.getElementById('pro-badge');
+        if (badge) {
+            badge.style.display = isProUser ? 'inline-block' : 'none';
+        }
+
+        // Фильтруем доступные уроки на основе прогресса и статуса покупки
+        let availableLessons = [];
+
+        for (let i = 0; i < lessons.length; i++) {
+            const lesson = lessons[i];
+
+            // ХИТРЫЙ ХУК: Если пользователь НЕ купил PRO, и мы дошли до урока,
+            // который идет ПОСЛЕ последнего бесплатного (id > 36), полностью прекращаем сборку курса!
+            if (!isProUser && lesson.id > 36) {
+                break;
+            }
+
+            availableLessons.push(lesson);
+
+            // Если текущий урок еще не пройден — это твоя текущая точка прогресса.
+            // Дальше этого урока обычный пользователь перескочить не может, стопаем цикл.
+            if (!userPassedLessonIds.includes(lesson.id)) {
+                break;
+            }
+        }
+
+        // Если массив почему-то пустой (защита от сбоев), берем самый первый урок
+        if (availableLessons.length === 0) {
+            availableLessons.push(lessons[0]);
+        }
+
+        // Группируем доступные уроки по разделам (moduleTitle)
+        let groups = {};
+        availableLessons.forEach(l => {
+            if (!groups[l.moduleTitle]) {
+                groups[l.moduleTitle] = [];
+            }
+            groups[l.moduleTitle].push(l);
+        });
+
+        // Строим красивый HTML с тегами <optgroup>
+        let selectorHTML = '';
+        for (const title in groups) {
+            selectorHTML += `<optgroup label="${title}">`;
+            groups[title].forEach(l => {
+                const globalIndex = lessons.indexOf(l);
+                selectorHTML += `<option value="${globalIndex}">Урок ${l.id}: ${l.title.split(': ')[1]}</option>`;
+            });
+            selectorHTML += `</optgroup warm>`;
+        }
+
+        selector.innerHTML = selectorHTML;
+
+        // Загружаем последний доступный юзеру урок из разрешенного пула
+        loadLesson(lessons.indexOf(availableLessons[availableLessons.length - 1]));
+    }
+
+    function loadLesson(index) {
+        currentLessonIndex = index;
+        const lesson = lessons[index];
+
+        document.getElementById('lesson-selector').value = index;
+        document.getElementById('theory-content').innerHTML = lesson.theory;
+        document.getElementById('editor-code-structure').innerHTML = lesson.renderEditor();
+        document.getElementById('output').innerHTML = "Напиши код по трафарету и нажми кнопку запуска...";
+        document.getElementById('next-btn').style.display = 'none';
+
+        const styleId = "dynamic-placeholder-style";
+        let styleTag = document.getElementById(styleId);
+        if (!styleTag) {
+            styleTag = document.createElement('style');
+            styleTag.id = styleId;
+            document.head.appendChild(styleTag);
+        }
+        styleTag.innerHTML = `
+                #user-code::placeholder { color: ${lesson.placeholderColor} !important; }
+                #user-code::-webkit-input-placeholder { color: ${lesson.placeholderColor} !important; }
+                #user-code::-moz-placeholder { color: ${lesson.placeholderColor} !important; }
+            `;
+    }
+
+    function switchLesson(index) {
+        loadLesson(parseInt(index));
+    }
+
+    function nextLesson() {
+        fetch('/api/lessons/progress')
+            .then(res => res.json())
+            .then(data => {
+                userPassedLessonIds = data.passed_lessons || [];
+                isProUser = data.is_pro_active || false; // 👈 Обновляем флаг здесь
+                initApp();
+            });
+    }
+
+    // ИСПРАВЛЕННАЯ ФУНКЦИЯ ЗАПУСКА И ВАЛИДАЦИИ КОДА С ОКНОМ ОПЛАТЫ
+    async function runCode() {
+        const userInput = document.getElementById('user-code').value.trim();
+        const outputDiv = document.getElementById('output');
+        const btn = document.getElementById('run-btn');
+        const nextBtn = document.getElementById('next-btn');
+
+        if (!userInput) {
+            outputDiv.innerHTML = '<span class="error">Ошибка: Поле ввода пустое!</span>';
+            return;
+        }
+
+        btn.disabled = true;
+        outputDiv.innerHTML = 'Отправка кода на твой Go-сервер, запуск компилятора...';
+
+        const currentLesson = lessons[currentLessonIndex];
+
+        // БРОНЕБОЙНОСТЬ: собираем полный исходный код урока через его собственный бидлер!
+        const finalCode = currentLesson.buildCode ? currentLesson.buildCode(userInput) : userInput;
+
+        try {
+            const response = await fetch('/api/lessons/verify', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    lesson_id: currentLesson.id,
+                    code: finalCode
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.errors) {
+                outputDiv.innerHTML = `<span class="error">Ошибка компиляции Go:\n${data.errors}</span>`;
+                return;
+            }
+
+            const isPassed = currentLesson.validate(data.stdout);
+
+            if (isPassed) {
+                outputDiv.innerHTML = `${data.stdout}\n<span class="success-msg">🎉 Отлично! Задание выполнено верно. Сохраняем прогресс...</span>`;
+
+                const saveRes = await fetch('/api/lessons/save-progress', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ lesson_id: currentLesson.id })
+                });
+
+                if (saveRes.ok) {
+                    outputDiv.innerHTML = `${data.stdout}\n<span class="success-msg">🎉 Отлично! Прогресс успешно зафиксирован в базе данных. Смело иди дальше!</span>`;
+
+                    // ХИТРЫЙ ХУК ДЛЯ ПЕЙВОЛЛА: Если это последний бесплатный урок
+                    if (currentLesson.isLast) {
+                        const paywallModal = document.getElementById('paywall-modal');
+                        if (paywallModal) {
+                            paywallModal.style.display = 'flex';
+                        }
+                    } else {
+                        // Обычное поведение для всех остальных уроков
+                        nextBtn.style.display = 'block';
+                    }
+                } else {
+                    outputDiv.innerHTML += `\n<span class="error">Ошибка сохранения прогресса в БД.</span>`;
+                }
+            } else {
+                outputDiv.innerHTML = `${data.stdout || ''}\n<span class="error">${currentLesson.errorMessage || "Результат выполнения программы не совпадает с условием задания."}</span>`;
+            }
+
+        } catch (err) {
+            outputDiv.innerHTML = '<span class="error">Ошибка сети: не удалось связаться с твоим бэкендом.</span>';
+            console.error(err);
+        } finally {
+            btn.disabled = false;
+        }
+    }
+
+    function showAuthModal(mode) {
+        authMode = mode;
+        const modal = document.getElementById('auth-modal');
+        const title = document.getElementById('auth-modal-title');
+        const submitBtn = document.getElementById('auth-submit-btn');
+        const consent = document.getElementById('consent-wrapper');
+        const errorDiv = document.getElementById('auth-error-msg');
+
+        errorDiv.style.display = 'none';
+        modal.style.display = 'flex';
+
+        if (mode === 'login') {
+            title.innerText = 'Вход в тренажер';
+            submitBtn.innerText = 'Войти';
+            consent.style.display = 'none';
+            document.getElementById('auth-toggle-desc').innerText = 'Еще нет аккаунта?';
+            document.getElementById('auth-toggle-link').innerText = 'Зарегистрироваться';
+        } else {
+            title.innerText = 'Регистрация аккаунта';
+            submitBtn.innerText = 'Создать аккаунт';
+            consent.style.display = 'block';
+            document.getElementById('auth-toggle-desc').innerText = 'Уже есть аккаунт?';
+            document.getElementById('auth-toggle-link').innerText = 'Войти';
+        }
+    }
+
+    function closeAuthModal() { document.getElementById('auth-modal').style.display = 'none'; }
+    function toggleAuthMode() { showAuthModal(authMode === 'login' ? 'register' : 'login'); }
+
+    async function handleAuthSubmit(e) {
+        e.preventDefault();
+        const email = document.getElementById('auth-email').value.trim();
+        const password = document.getElementById('auth-password').value;
+        const errorDiv = document.getElementById('auth-error-msg');
+
+        const url = authMode === 'login' ? '/api/auth/login' : '/api/auth/register';
+
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+
+            if (!response.ok) {
+                const errText = await response.text();
+                throw new Error(errText || 'Ошибка сервера');
+            }
+
+            if (authMode === 'register') {
+                authMode = 'login';
+                handleAuthSubmit(e);
+                return;
+            }
+
+            closeAuthModal();
+            checkAuthOnLoad();
+
+        } catch (err) {
+            errorDiv.innerText = err.message;
+            errorDiv.style.display = 'block';
+        }
+    }
+
+    function logout() {
+        document.cookie = "user_id=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+        showLandingView();
+    }
+
+    function openModal(e) { e.preventDefault(); document.getElementById('privacy-modal').style.display = 'flex'; }
+    function closeModal() { document.getElementById('privacy-modal').style.display = 'none'; }
+
+    window.onclick = function(event) {
+        const pModal = document.getElementById('privacy-modal');
+        const aModal = document.getElementById('auth-modal');
+        if (event.target == pModal) pModal.style.display = "none";
+        if (event.target == aModal) aModal.style.display = "none";
+    }
+
+    window.onload = checkAuthOnLoad;
+
+    async function buyProCourse() {
+        const buyBtn = document.getElementById('buy-btn');
+        buyBtn.disabled = true;
+        buyBtn.innerText = 'Обработка платежа...';
+
+        try {
+            const response = await fetch('/api/auth/test-pay', { method: 'POST' });
+            const data = await response.json();
+
+            if (data.success) {
+                alert(data.message);
+                document.getElementById('paywall-modal').style.display = 'none'; // Скрываем модалку
+
+                // Запрашиваем прогресс заново, чтобы обновить флаг isProUser и подгрузить новые уроки
+                nextLesson();
+            } else {
+                alert("Ошибка при активации курса.");
+            }
+        } catch (err) {
+            alert("Ошибка сети: не удалось связаться с бэкендом.");
+            console.error(err);
+        } finally {
+            buyBtn.disabled = false;
+            buyBtn.innerText = 'Активировать PRO-доступ (Тестовая оплата)';
+        }
+    }
+</script>
+
+<div id="paywall-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(13, 17, 23, 0.95); z-index: 9999; align-items: center; justify-content: center; font-family: sans-serif; color: #c9d1d9;">
+    <div style="background: #161b22; border: 1px solid #30363d; border-radius: 12px; max-width: 550px; width: 90%; padding: 40px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
+        <div style="font-size: 50px; margin-bottom: 20px;">🚀</div>
+        <h2 style="color: #58a6ff; margin-bottom: 15px; font-size: 24px;">Поздравляем! Базовый уровень пройден!</h2>
+        <p style="line-height: 1.6; color: #8b949e; margin-bottom: 25px;">
+            Ты успешно освоил фундамент Go: от переменных и циклов до структур, интерфейсов и работы с памятью. Вводные уроки окончены!
+        </p>
+
+        <div style="background: #21262d; border-radius: 8px; padding: 20px; text-align: left; margin-bottom: 25px; border-left: 4px solid #58a6ff;">
+            <h4 style="margin: 0 0 10px 0; color: #f0f6fc; font-size: 16px;">Хочешь продолжения и PRO-уровни?</h4>
+            <p style="margin: 0; font-size: 14px; line-height: 1.6; color: #c9d1d9;">
+                Если тебе понравился тренажер и ты хочешь проходить обучение дальше — напиши мне на почту <a href="mailto:mia928@bk.ru" style="color: #58a6ff; font-weight: bold; text-decoration: none;">mia928@bk.ru</a> о своем намерении.
+                Так я пойму, что есть живая аудитория, и быстрее открою доступ к продвинутым модулям!
+            </p>
+        </div>
+
+        <div style="background: #1f242c; border: 1px solid #30363d; border-radius: 8px; padding: 15px; text-align: left; margin-bottom: 25px;">
+            <span style="font-size: 12px; color: #8b949e; text-transform: uppercase; font-weight: bold; display: block; margin-bottom: 8px;">В PRO-версии тебя ждет:</span>
+            <ul style="margin: 0; padding-left: 20px; font-size: 13px; line-height: 1.6; color: #8b949e;">
+                <li><b>Устройство Slices & Maps:</b> указатели, емкость ($cap$), pointer-мутации.</li>
+                <li><b>Конкурентность (Concurrency):</b> Горутины, каналы и оператор <code style="background:#0d1117; padding:2px 4px; border-radius:4px;">select</code>.</li>
+                <li><b>Боевой Backend:</b> напишем HTTP-сервер на Go с роутингом и БД.</li>
+            </ul>
+        </div>
+
+        <button onclick="document.getElementById('paywall-modal').style.display='none';" style="background: #21262d; color: #c9d1d9; border: 1px solid #30363d; padding: 12px 24px; font-size: 14px; font-weight: bold; border-radius: 6px; cursor: pointer; width: 100%; transition: background 0.2s;">
+            Понятно, вернуться к пройденным урокам
+        </button>
+    </div>
+</div>
+
+<div id="cookie-notice" style="display: none; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 15px 25px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); z-index: 10000; align-items: center; justify-content: space-between; width: 90%; max-width: 600px; font-family: sans-serif; color: #c9d1d9; gap: 20px;">
+    <div style="font-size: 13px; line-height: 1.5; text-align: left;">
+        Этот сайт использует файлы cookie и локальное хранилище для авторизации и сохранения твоего прогресса обучения. Продолжая использовать тренажер, ты соглашаешься с их использованием.
+    </div>
+    <button onclick="acceptCookies()" style="background: #238636; color: #ffffff; border: none; padding: 8px 20px; font-size: 13px; font-weight: bold; border-radius: 4px; cursor: pointer; white-space: nowrap;">
+        ОК, принять
+    </button>
+</div>
+
+<script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [{
+            "@type": "Question",
+            "name": "Кому подойдет этот тренажер по Go?",
+            "value": "Кому подойдет этот тренажер?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Тренажер спроектирован для абсолютных новичков. Мы используем систему подсказок-трафаретов, которая позволяет нарабатывать мышечную память синтаксиса без унылой зубрежки теории."
+            }
+        }, {
+            "@type": "Question",
+            "name": "Нужно ли устанавливать Go на компьютер для обучения?",
+            "value": "Нужно ли устанавливать Go на компьютер?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Нет, ничего настраивать и скачивать не нужно. Весь код компилируется на удаленном сервере и выдает результат прямо в окно встроенного терминала."
+            }
+        }]
+    }
+</script>
+
+</body>
+</html>

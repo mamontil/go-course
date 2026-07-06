@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Allow: /index.html
+Disallow: /api/
+
+Sitemap: https://go.zanyatsya.ru/sitemap.xml
