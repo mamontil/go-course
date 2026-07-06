@@ -1,11 +1,18 @@
 name: Deploy Go Course
 
-# Запуск по кнопке из интерфейса ИЛИ автоматически при пуше в ветку main
 on:
-  workflow_dispatch:
+  # Деплой при пуше в main (обновляет только фронтенд)
   push:
     branches:
       - main
+  # Выносная кнопка с выбором опций в интерфейсе GitHub Actions
+  workflow_dispatch:
+    inputs:
+      rebuild_backend:
+        description: 'Пересобрать и обновить Go бинарник?'
+        required: true
+        type: boolean
+        default: false
 
 jobs:
   deploy:
@@ -14,26 +21,33 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # Элементы сборки Go запускаются ТОЛЬКО если деплой идет по кнопке И выбран чекбокс rebuild_backend
       - name: Set up Go
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.rebuild_backend == 'true' }}
         uses: actions/setup-go@v5
         with:
-          go-version: '1.22' # Укажи свою версию Go
+          go-version: '1.22'
 
       - name: Build Go Binary
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.rebuild_backend == 'true' }}
         run: |
           GOOS=linux GOARCH=amd64 go build -o main main.go
 
+      # Деплой файлов на сервер
       - name: Deploy to Server via SSH
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SSH_HOST }}
           username: root
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "main,frontend/"
+          # Если пуш — кидаем только фронт. Если кнопка с чекбоксом — кидаем фронт и собранный main.
+          source: ${{ (github.event_name == 'workflow_dispatch' && github.event.inputs.rebuild_backend == 'true') && 'main,frontend/' || 'frontend/' }}
           target: "/root/go-course/"
           overwrite: true
 
+      # Перезапуск сервиса нужен только если обновился бинарник main
       - name: Restart Systemd Service
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.rebuild_backend == 'true' }}
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
