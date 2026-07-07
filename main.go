@@ -8,6 +8,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"net/mail"
 	"net/url"
 	"strconv"
 	"strings"
@@ -44,8 +45,11 @@ type ProgressResponse struct {
 	IsProActive   bool  `json:"is_pro_active"`
 }
 
-func hashPassword(password string) string {
-	const salt = "SuperSecretSaltGoCourse2026"
+var AppSalt string
+
+const OldSalt = "SuperSecretSaltGoCourse2026"
+
+func hashWithSalt(password, salt string) string {
 	h := sha256.New()
 	h.Write([]byte(password + salt))
 	return fmt.Sprintf("%x", h.Sum(nil))
@@ -123,14 +127,22 @@ func handleRegister(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// 1. Проверка на пустоту
 	if req.Email == "" || req.Password == "" {
 		http.Error(w, "Email и пароль не могут быть пустыми", http.StatusBadRequest)
 		return
 	}
 
-	securePassword := hashPassword(req.Password)
+	// 2. Валидация email по маске
+	_, err := mail.ParseAddress(req.Email)
+	if err != nil {
+		http.Error(w, "Некорректный формат Email", http.StatusBadRequest)
+		return
+	}
 
-	_, err := db.Exec("INSERT INTO users (email, password) VALUES (?, ?)", req.Email, securePassword)
+	securePassword := hashWithSalt(req.Password, AppSalt)
+
+	_, err = db.Exec("INSERT INTO users (email, password) VALUES (?, ?)", req.Email, securePassword)
 	if err != nil {
 		http.Error(w, "Пользователь с таким Email уже существует", http.StatusConflict)
 		return
@@ -152,15 +164,36 @@ func handleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	securePassword := hashPassword(req.Password)
-
+	// 1. Получаем ID и текущий хэш из БД
 	var userID int
-	err := db.QueryRow("SELECT id FROM users WHERE email = ? AND password = ?", req.Email, securePassword).Scan(&userID)
+	var dbHash string
+	err := db.QueryRow("SELECT id, password FROM users WHERE email = ?", req.Email).Scan(&userID, &dbHash)
 	if err != nil {
 		http.Error(w, "Неверный email или пароль", http.StatusUnauthorized)
 		return
 	}
 
+	// 2. Проверяем пароль
+	// Сначала пытаемся проверить с НОВОЙ солью (AppSalt)
+	currentHash := hashWithSalt(req.Password, AppSalt)
+
+	if dbHash != currentHash {
+		// Если не подошло, проверяем со СТАРОЙ солью (OldSalt)
+		oldHash := hashWithSalt(req.Password, OldSalt)
+		if dbHash == oldHash {
+			// Пароль верный, но он на старой соли. Срочно обновляем хэш в БД!
+			_, err = db.Exec("UPDATE users SET password = ? WHERE id = ?", currentHash, userID)
+			if err != nil {
+				log.Printf("Ошибка миграции пароля для юзера %d: %v", userID, err)
+			}
+		} else {
+			// Пароль не подошел ни по одной соли
+			http.Error(w, "Неверный email или пароль", http.StatusUnauthorized)
+			return
+		}
+	}
+
+	// 3. Если дошли сюда — логин успешен. Ставим куку
 	cookie := &http.Cookie{
 		Name:     "user_id",
 		Value:    strconv.Itoa(userID),
@@ -171,6 +204,7 @@ func handleLogin(w http.ResponseWriter, r *http.Request) {
 	}
 	http.SetCookie(w, cookie)
 
+	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]interface{}{"success": true, "user_id": userID})
 }
 
