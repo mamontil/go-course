@@ -31,7 +31,7 @@ jobs:
       - name: Build Go Binary
         if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.rebuild_backend == 'true' }}
         run: |
-          GOOS=linux GOARCH=amd64 go build -o main main.go
+          GOOS=linux GOARCH=amd64 go build -ldflags "-X main.AppSalt=${{ secrets.APP_SALT }}" -o main main.go
 
       # Деплой файлов на сервер
       - name: Deploy to Server via SSH
