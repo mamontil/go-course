@@ -1,11 +1,9 @@
 name: Deploy Go Course
 
 on:
-  # Деплой при пуше в main (обновляет только фронтенд)
   push:
     branches:
       - main
-  # Выносная кнопка с выбором опций в интерфейсе GitHub Actions
   workflow_dispatch:
     inputs:
       rebuild_backend:
@@ -21,7 +19,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Элементы сборки Go запускаются ТОЛЬКО если деплой идет по кнопке И выбран чекбокс rebuild_backend
       - name: Set up Go
         if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.rebuild_backend == 'true' }}
         uses: actions/setup-go@v5
@@ -33,20 +30,29 @@ jobs:
         run: |
           GOOS=linux GOARCH=amd64 go build -ldflags "-X main.AppSalt=${{ secrets.APP_SALT }}" -o main main.go
 
-      # Деплой файлов на сервер
+      # Остановка сервиса перед обновлением (чтобы файл не был занят)
+      - name: Stop Service
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.rebuild_backend == 'true' }}
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: root
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: systemctl stop go-course || true
+
+      # Деплой файлов
       - name: Deploy to Server via SSH
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SSH_HOST }}
           username: root
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          # Если пуш — кидаем только фронт. Если кнопка с чекбоксом — кидаем фронт и собранный main.
           source: ${{ (github.event_name == 'workflow_dispatch' && github.event.inputs.rebuild_backend == 'true') && 'main,frontend/' || 'frontend/' }}
           target: "/root/go-course/"
           overwrite: true
 
-      # Перезапуск сервиса нужен только если обновился бинарник main
-      - name: Restart Systemd Service
+      # Запуск сервиса после обновления
+      - name: Start Service
         if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.rebuild_backend == 'true' }}
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -54,5 +60,5 @@ jobs:
           username: root
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            systemctl restart go-course
+            systemctl start go-course
             systemctl status go-course | grep -E "Active:"
