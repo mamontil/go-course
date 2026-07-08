@@ -275,9 +275,9 @@ body {
 #app-view {
     display: flex;
     flex-direction: column;
-    height: 100vh;
+    /*height: 100vh;*/
     overflow: hidden;
-    position: fixed;
+    /*position: fixed;*/
     inset: 0;
 }
 
