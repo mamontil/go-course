@@ -112,6 +112,7 @@
             <span id="pro-badge" style="display: none; background: #238636; color: #fff; padding: 4px 8px; font-size: 12px; font-weight: bold; border-radius: 4px; margin-right: 15px;">PRO ACCOUNT</span>
             <select id="lesson-selector" class="navigation-select" onchange="switchLesson(this.value)"></select>
             <button class="btn-logout" onclick="showLandingView()">На главную</button>
+            <button id="logout-btn" class="btn-logout" style="display: none;" onclick="logout()">Выйти</button>
         </div>
     </header>
 
@@ -201,38 +202,49 @@
     let userPassedLessonIds = JSON.parse(localStorage.getItem('passed_lessons') || '[]');
     let isProUser = false;
 
-    function checkAuthOnLoad() {
-        // Показываем куки если ещё не нажали ОК
+    async function checkAuthOnLoad() {
+        // 1. Cookie Notice
         if (!localStorage.getItem('cookie_accepted')) {
             const cookieNotice = document.getElementById('cookie-notice');
             if (cookieNotice) cookieNotice.style.display = 'flex';
         }
 
-        // Пробуем получить прогресс с сервера (для залогиненных)
-        fetch('/api/lessons/progress')
-            .then(res => {
-                if (res.ok) return res.json();
-                throw new Error("Не авторизован");
-            })
-            .then(data => {
-                // Залогинен — берём прогресс с сервера
+        // 2. Инициализация прогресса
+        // Сначала берем то, что есть локально, чтобы не было "пустого" экрана
+        let localProgress = JSON.parse(localStorage.getItem('passed_lessons') || '[]');
+        userPassedLessonIds = localProgress;
+
+        try {
+            const res = await fetch('/api/lessons/progress');
+            if (res.ok) {
+                const data = await res.json();
+                // Если сервер ответил — берем данные сервера (они приоритетнее)
                 userPassedLessonIds = data.passed_lessons || [];
                 isProUser = data.is_pro_active || false;
                 localStorage.setItem('passed_lessons', JSON.stringify(userPassedLessonIds));
+            } else {
+                // Если сервер вернул ошибку, просто оставляем локальный прогресс
+                console.warn("Пользователь не авторизован или ошибка сервера");
+            }
+        } catch (e) {
+            console.error("Не удалось подключиться к серверу прогресса, используем кэш");
+        }
 
-                if (userPassedLessonIds.includes(36) && !isProUser) {
-                    const paywallModal = document.getElementById('paywall-modal');
-                    if (paywallModal) paywallModal.style.display = 'flex';
-                }
-            })
-            .catch(() => {
-                // Не залогинен — берём прогресс из localStorage
-                userPassedLessonIds = JSON.parse(localStorage.getItem('passed_lessons') || '[]');
-                isProUser = false;
-            });
+        // 3. Логика навигации (не меняем)
+        const params = new URLSearchParams(window.location.search);
+        const lessonId = params.get('id');
 
-        // Показываем лендинг по умолчанию
-        showLandingView();
+        if (lessonId) {
+            showAppView();
+            const index = window.lessons.findIndex(l => l.id == lessonId);
+            if (index !== -1) {
+                loadLesson(index);
+            } else {
+                showLandingView();
+            }
+        } else {
+            showLandingView();
+        }
     }
 
     function acceptCookies() {
@@ -242,13 +254,29 @@
     }
 
     function showLandingView() {
+        window.history.pushState({}, '', window.location.pathname);
+
         document.getElementById('landing-view').style.display = 'block';
         document.getElementById('app-view').style.display = 'none';
+    }
+    function updateHeaderButtons() {
+        const logoutBtn = document.getElementById('logout-btn');
+
+        // Проверяем, авторизован ли пользователь (по куке или флагу)
+        // Допустим, мы считаем юзера залогиненным, если id сессии есть в куках
+        const isAuth = document.cookie.includes("user_id=");
+
+        if (isAuth) {
+            logoutBtn.style.display = 'inline-block';
+        } else {
+            logoutBtn.style.display = 'none';
+        }
     }
 
     function showAppView() {
         document.getElementById('landing-view').style.display = 'none';
         document.getElementById('app-view').style.display = 'block';
+        updateHeaderButtons();
         initApp();
     }
 
@@ -301,6 +329,9 @@
         currentLessonIndex = index;
         const lesson = lessons[index];
 
+        document.title = lesson.title + " | Go-Тренажер";
+        document.querySelector('meta[name="description"]').setAttribute("content", lesson.title + " — разбор темы на практике.");
+
         document.getElementById('lesson-selector').value = index;
         document.getElementById('theory-content').innerHTML = lesson.theory;
         document.getElementById('editor-code-structure').innerHTML = lesson.renderEditor();
@@ -322,6 +353,10 @@
     }
 
     function switchLesson(index) {
+        const lesson = window.lessons[index];
+
+        // Обновляем URL в адресной строке без перезагрузки
+        window.history.pushState({ id: lesson.id }, '', `?id=${lesson.id}`);
         loadLesson(parseInt(index));
     }
 
@@ -452,6 +487,8 @@
                 body: JSON.stringify({ email, password })
             });
 
+            const data = await response.json();
+
             if (!response.ok) {
                 const errText = await response.text();
                 throw new Error(errText || 'Ошибка сервера');
@@ -462,6 +499,9 @@
                 handleAuthSubmit(e);
                 return;
             }
+
+            const expires = new Date(Date.now() + 7 * 864e5).toUTCString();
+            document.cookie = `user_id=${data.user_id}; expires=${expires}; path=/; SameSite=Strict`;
 
             closeAuthModal();
             // После логина — подтягиваем серверный прогресс
@@ -485,6 +525,8 @@
 
     function logout() {
         document.cookie = "user_id=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+        userPassedLessonIds = [];
+        localStorage.removeItem('passed_lessons'); // Важно!
         isProUser = false;
         showLandingView();
     }
