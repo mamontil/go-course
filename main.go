@@ -256,11 +256,11 @@ func handleGetProgress(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleVerify(w http.ResponseWriter, r *http.Request) {
-	_, err := getUserIDFromCookie(r)
-	if err != nil {
-		http.Error(w, "Не авторизован", http.StatusUnauthorized)
-		return
-	}
+	//_, err := getUserIDFromCookie(r)
+	//if err != nil {
+	//	http.Error(w, "Не авторизован", http.StatusUnauthorized)
+	//	return
+	//}
 
 	if r.Method != http.MethodPost {
 		http.Error(w, "Метод не поддерживается", http.StatusMethodNotAllowed)

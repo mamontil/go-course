@@ -18,17 +18,14 @@
             for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
             k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
         })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110454683', 'ym');
-
         ym(110454683, 'init', {ssr:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
     </script>
     <noscript><div><img src="https://mc.yandex.ru/watch/110454683" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
     <!-- /Yandex.Metrika counter -->
 
-
     <!-- Yandex Autoplacement 19553629 -->
     <script src="https://yandex.ru/ads/system/context.js" async></script>
     <script data-page-id="19553629" src="https://yandex.ru/ads/system/ap-loader.js" async></script>
-
 </head>
 <body>
 
@@ -37,7 +34,7 @@
         <div class="logo">🚀 Go-Тренажер</div>
         <div class="auth-buttons">
             <button class="btn btn-nav" onclick="showAuthModal('login')">Войти</button>
-            <button class="btn btn-run" onclick="showAuthModal('register')">Начать бесплатно</button>
+            <button class="btn btn-run" onclick="showAppView()">Начать бесплатно</button>
         </div>
     </header>
 
@@ -51,8 +48,8 @@
                 Освой синтаксис Go, прокачай мышечную память и открой дверь в высокооплачиваемую backend-разработку.
             </p>
             <div class="cta-block">
-                <button class="btn btn-cta" onclick="showAuthModal('register')">Создать личный кабинет и начать ➜</button>
-                <p class="cta-subtext">Регистрация за 10 секунд. Без ввода банковских карт. Полностью бесплатно.</p>
+                <button class="btn btn-cta" onclick="showAppView()">Начать обучение бесплатно ➜</button>
+                <p class="cta-subtext">Без регистрации. Без ввода банковских карт. Полностью бесплатно.</p>
             </div>
         </div>
 
@@ -67,10 +64,11 @@
             </div>
             <div class="feature-card">
                 <h3>🔒 Защита от перескакивания</h3>
-                <p>Твой прогресс сохраняется в базу данных. Следующий урок откроется только тогда, когда компилятор примет код текущего.</p>
+                <p>Следующий урок откроется только тогда, когда компилятор примет код текущего.</p>
             </div>
         </div>
     </section>
+
     <section class="seo-section" style="max-width: 1200px; margin: 60px auto; padding: 0 20px; font-family: sans-serif;">
         <h2 style="text-align: center; color: #58a6ff; margin-bottom: 40px; font-size: 28px;">Программа базового курса (Бесплатно)</h2>
 
@@ -112,10 +110,8 @@
         <h1>Быстрый Старт в Go 🚀</h1>
         <div class="header-right">
             <span id="pro-badge" style="display: none; background: #238636; color: #fff; padding: 4px 8px; font-size: 12px; font-weight: bold; border-radius: 4px; margin-right: 15px;">PRO ACCOUNT</span>
-
-            <select id="lesson-selector" class="navigation-select" onchange="switchLesson(this.value)">
-            </select>
-            <button class="btn-logout" onclick="logout()">Выйти</button>
+            <select id="lesson-selector" class="navigation-select" onchange="switchLesson(this.value)"></select>
+            <button class="btn-logout" onclick="showLandingView()">На главную</button>
         </div>
     </header>
 
@@ -154,9 +150,7 @@
     <div class="modal-content auth-form-container">
         <button class="close-modal" onclick="closeAuthModal()">✕</button>
         <h2 id="auth-modal-title">Вход в систему</h2>
-
         <div id="auth-error-msg" class="error" style="margin-bottom: 15px; display: none;"></div>
-
         <form id="real-auth-form" onsubmit="handleAuthSubmit(event)">
             <div class="form-group">
                 <label>Ваш Email:</label>
@@ -166,17 +160,14 @@
                 <label>Пароль:</label>
                 <input type="password" id="auth-password" required placeholder="••••••••">
             </div>
-
             <div class="form-group checkbox-group" id="consent-wrapper">
                 <input type="checkbox" id="auth-consent" required checked>
                 <label for="auth-consent">
                     Я согласен на обработку <a href="#" onclick="openModal(event)">персональных данных</a> (Email) для сохранения прогресса обучения.
                 </label>
             </div>
-
             <button type="submit" class="btn btn-cta" id="auth-submit-btn" style="width: 100%; margin-top: 15px;">Войти</button>
         </form>
-
         <p class="auth-toggle-text">
             <span id="auth-toggle-desc">Еще нет аккаунта?</span>
             <a href="#" id="auth-toggle-link" onclick="toggleAuthMode()">Зарегистрироваться</a>
@@ -206,41 +197,44 @@
 <script>
     let currentLessonIndex = 0;
     let authMode = 'login';
-    let userPassedLessonIds = [];
+    // Прогресс храним локально в браузере — без сервера
+    let userPassedLessonIds = JSON.parse(localStorage.getItem('passed_lessons') || '[]');
     let isProUser = false;
 
     function checkAuthOnLoad() {
-        // Показываем куки, если пользователь ещё не нажимал ОК
+        // Показываем куки если ещё не нажали ОК
         if (!localStorage.getItem('cookie_accepted')) {
             const cookieNotice = document.getElementById('cookie-notice');
             if (cookieNotice) cookieNotice.style.display = 'flex';
         }
 
+        // Пробуем получить прогресс с сервера (для залогиненных)
         fetch('/api/lessons/progress')
             .then(res => {
                 if (res.ok) return res.json();
                 throw new Error("Не авторизован");
             })
             .then(data => {
+                // Залогинен — берём прогресс с сервера
                 userPassedLessonIds = data.passed_lessons || [];
                 isProUser = data.is_pro_active || false;
-                showAppView();
+                localStorage.setItem('passed_lessons', JSON.stringify(userPassedLessonIds));
 
-                // ХАК: Если пользователь прошел все 36 бесплатных уроков (id последнего бесплатного равен 36),
-                // и при этом он еще не имеет статуса PRO — сразу выкидываем модалку при каждом заходе в систему!
                 if (userPassedLessonIds.includes(36) && !isProUser) {
                     const paywallModal = document.getElementById('paywall-modal');
-                    if (paywallModal) {
-                        paywallModal.style.display = 'flex';
-                    }
+                    if (paywallModal) paywallModal.style.display = 'flex';
                 }
             })
             .catch(() => {
-                showLandingView();
+                // Не залогинен — берём прогресс из localStorage
+                userPassedLessonIds = JSON.parse(localStorage.getItem('passed_lessons') || '[]');
+                isProUser = false;
             });
+
+        // Показываем лендинг по умолчанию
+        showLandingView();
     }
 
-    // Функция закрытия куки-плашки
     function acceptCookies() {
         localStorage.setItem('cookie_accepted', 'true');
         const cookieNotice = document.getElementById('cookie-notice');
@@ -261,62 +255,46 @@
     function initApp() {
         const selector = document.getElementById('lesson-selector');
 
-        // Управление бейджем PRO в шапке
         const badge = document.getElementById('pro-badge');
-        if (badge) {
-            badge.style.display = isProUser ? 'inline-block' : 'none';
-        }
+        if (badge) badge.style.display = isProUser ? 'inline-block' : 'none';
 
-        // Фильтруем доступные уроки на основе прогресса и статуса покупки
+        // Все уроки до 36 включительно открыты без регистрации и без прогресса
         let availableLessons = [];
-
         for (let i = 0; i < lessons.length; i++) {
             const lesson = lessons[i];
 
-            // ХИТРЫЙ ХУК: Если пользователь НЕ купил PRO, и мы дошли до урока,
-            // который идет ПОСЛЕ последнего бесплатного (id > 36), полностью прекращаем сборку курса!
-            if (!isProUser && lesson.id > 36) {
-                break;
-            }
+            // PRO уроки (id > 36) — только для PRO-пользователей
+            if (!isProUser && lesson.id > 36) break;
 
             availableLessons.push(lesson);
-
-            // Если текущий урок еще не пройден — это твоя текущая точка прогресса.
-            // Дальше этого урока обычный пользователь перескочить не может, стопаем цикл.
-            if (!userPassedLessonIds.includes(lesson.id)) {
-                break;
-            }
+            // Больше НЕ останавливаемся на непройденном уроке — все 36 открыты
         }
 
-        // Если массив почему-то пустой (защита от сбоев), берем самый первый урок
-        if (availableLessons.length === 0) {
-            availableLessons.push(lessons[0]);
-        }
+        if (availableLessons.length === 0) availableLessons.push(lessons[0]);
 
-        // Группируем доступные уроки по разделам (moduleTitle)
+        // Группируем по модулям
         let groups = {};
         availableLessons.forEach(l => {
-            if (!groups[l.moduleTitle]) {
-                groups[l.moduleTitle] = [];
-            }
+            if (!groups[l.moduleTitle]) groups[l.moduleTitle] = [];
             groups[l.moduleTitle].push(l);
         });
 
-        // Строим красивый HTML с тегами <optgroup>
         let selectorHTML = '';
         for (const title in groups) {
             selectorHTML += `<optgroup label="${title}">`;
             groups[title].forEach(l => {
                 const globalIndex = lessons.indexOf(l);
-                selectorHTML += `<option value="${globalIndex}">Урок ${l.id}: ${l.title.split(': ')[1]}</option>`;
+                const passed = userPassedLessonIds.includes(l.id) ? '✅ ' : '';
+                selectorHTML += `<option value="${globalIndex}">${passed}Урок ${l.id}: ${l.title.split(': ')[1]}</option>`;
             });
-            selectorHTML += `</optgroup warm>`;
+            selectorHTML += `</optgroup>`;
         }
-
         selector.innerHTML = selectorHTML;
 
-        // Загружаем последний доступный юзеру урок из разрешенного пула
-        loadLesson(lessons.indexOf(availableLessons[availableLessons.length - 1]));
+        // Загружаем первый непройденный урок, или первый если все пройдены
+        const firstNotPassed = availableLessons.find(l => !userPassedLessonIds.includes(l.id));
+        const lessonToLoad = firstNotPassed || availableLessons[0];
+        loadLesson(lessons.indexOf(lessonToLoad));
     }
 
     function loadLesson(index) {
@@ -337,10 +315,10 @@
             document.head.appendChild(styleTag);
         }
         styleTag.innerHTML = `
-                #user-code::placeholder { color: ${lesson.placeholderColor} !important; }
-                #user-code::-webkit-input-placeholder { color: ${lesson.placeholderColor} !important; }
-                #user-code::-moz-placeholder { color: ${lesson.placeholderColor} !important; }
-            `;
+            #user-code::placeholder { color: ${lesson.placeholderColor} !important; }
+            #user-code::-webkit-input-placeholder { color: ${lesson.placeholderColor} !important; }
+            #user-code::-moz-placeholder { color: ${lesson.placeholderColor} !important; }
+        `;
     }
 
     function switchLesson(index) {
@@ -348,16 +326,20 @@
     }
 
     function nextLesson() {
+        // Пробуем обновить прогресс с сервера (для залогиненных)
         fetch('/api/lessons/progress')
-            .then(res => res.json())
+            .then(res => res.ok ? res.json() : null)
             .then(data => {
-                userPassedLessonIds = data.passed_lessons || [];
-                isProUser = data.is_pro_active || false; // 👈 Обновляем флаг здесь
+                if (data) {
+                    userPassedLessonIds = data.passed_lessons || [];
+                    isProUser = data.is_pro_active || false;
+                    localStorage.setItem('passed_lessons', JSON.stringify(userPassedLessonIds));
+                }
                 initApp();
-            });
+            })
+            .catch(() => initApp());
     }
 
-    // ИСПРАВЛЕННАЯ ФУНКЦИЯ ЗАПУСКА И ВАЛИДАЦИИ КОДА С ОКНОМ ОПЛАТЫ
     async function runCode() {
         const userInput = document.getElementById('user-code').value.trim();
         const outputDiv = document.getElementById('output');
@@ -370,21 +352,16 @@
         }
 
         btn.disabled = true;
-        outputDiv.innerHTML = 'Отправка кода на твой Go-сервер, запуск компилятора...';
+        outputDiv.innerHTML = 'Отправка кода на Go-сервер, запуск компилятора...';
 
         const currentLesson = lessons[currentLessonIndex];
-
-        // БРОНЕБОЙНОСТЬ: собираем полный исходный код урока через его собственный бидлер!
         const finalCode = currentLesson.buildCode ? currentLesson.buildCode(userInput) : userInput;
 
         try {
             const response = await fetch('/api/lessons/verify', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    lesson_id: currentLesson.id,
-                    code: finalCode
-                })
+                body: JSON.stringify({ lesson_id: currentLesson.id, code: finalCode })
             });
 
             const data = await response.json();
@@ -399,34 +376,33 @@
             if (isPassed) {
                 outputDiv.innerHTML = `${data.stdout}\n<span class="success-msg">🎉 Отлично! Задание выполнено верно. Сохраняем прогресс...</span>`;
 
-                const saveRes = await fetch('/api/lessons/save-progress', {
+                // Сохраняем прогресс локально всегда
+                if (!userPassedLessonIds.includes(currentLesson.id)) {
+                    userPassedLessonIds.push(currentLesson.id);
+                    localStorage.setItem('passed_lessons', JSON.stringify(userPassedLessonIds));
+                }
+
+                // Пробуем сохранить на сервере (для залогиненных)
+                fetch('/api/lessons/save-progress', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ lesson_id: currentLesson.id })
-                });
+                }).catch(() => {}); // Не залогинен — молча игнорируем
 
-                if (saveRes.ok) {
-                    outputDiv.innerHTML = `${data.stdout}\n<span class="success-msg">🎉 Отлично! Прогресс успешно зафиксирован в базе данных. Смело иди дальше!</span>`;
+                outputDiv.innerHTML = `${data.stdout}\n<span class="success-msg">🎉 Отлично! Прогресс сохранён. Смело иди дальше!</span>`;
 
-                    // ХИТРЫЙ ХУК ДЛЯ ПЕЙВОЛЛА: Если это последний бесплатный урок
-                    if (currentLesson.isLast) {
-                        const paywallModal = document.getElementById('paywall-modal');
-                        if (paywallModal) {
-                            paywallModal.style.display = 'flex';
-                        }
-                    } else {
-                        // Обычное поведение для всех остальных уроков
-                        nextBtn.style.display = 'block';
-                    }
+                if (currentLesson.isLast) {
+                    const paywallModal = document.getElementById('paywall-modal');
+                    if (paywallModal) paywallModal.style.display = 'flex';
                 } else {
-                    outputDiv.innerHTML += `\n<span class="error">Ошибка сохранения прогресса в БД.</span>`;
+                    nextBtn.style.display = 'block';
                 }
             } else {
                 outputDiv.innerHTML = `${data.stdout || ''}\n<span class="error">${currentLesson.errorMessage || "Результат выполнения программы не совпадает с условием задания."}</span>`;
             }
 
         } catch (err) {
-            outputDiv.innerHTML = '<span class="error">Ошибка сети: не удалось связаться с твоим бэкендом.</span>';
+            outputDiv.innerHTML = '<span class="error">Ошибка сети: не удалось связаться с бэкендом.</span>';
             console.error(err);
         } finally {
             btn.disabled = false;
@@ -467,7 +443,6 @@
         const email = document.getElementById('auth-email').value.trim();
         const password = document.getElementById('auth-password').value;
         const errorDiv = document.getElementById('auth-error-msg');
-
         const url = authMode === 'login' ? '/api/auth/login' : '/api/auth/register';
 
         try {
@@ -489,7 +464,18 @@
             }
 
             closeAuthModal();
-            checkAuthOnLoad();
+            // После логина — подтягиваем серверный прогресс
+            fetch('/api/lessons/progress')
+                .then(res => res.ok ? res.json() : null)
+                .then(data => {
+                    if (data) {
+                        userPassedLessonIds = data.passed_lessons || [];
+                        isProUser = data.is_pro_active || false;
+                        localStorage.setItem('passed_lessons', JSON.stringify(userPassedLessonIds));
+                    }
+                    showAppView();
+                })
+                .catch(() => showAppView());
 
         } catch (err) {
             errorDiv.innerText = err.message;
@@ -499,6 +485,7 @@
 
     function logout() {
         document.cookie = "user_id=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+        isProUser = false;
         showLandingView();
     }
 
@@ -518,26 +505,21 @@
         const buyBtn = document.getElementById('buy-btn');
         buyBtn.disabled = true;
         buyBtn.innerText = 'Обработка платежа...';
-
         try {
             const response = await fetch('/api/auth/test-pay', { method: 'POST' });
             const data = await response.json();
-
             if (data.success) {
                 alert(data.message);
-                document.getElementById('paywall-modal').style.display = 'none'; // Скрываем модалку
-
-                // Запрашиваем прогресс заново, чтобы обновить флаг isProUser и подгрузить новые уроки
+                document.getElementById('paywall-modal').style.display = 'none';
                 nextLesson();
             } else {
                 alert("Ошибка при активации курса.");
             }
         } catch (err) {
             alert("Ошибка сети: не удалось связаться с бэкендом.");
-            console.error(err);
         } finally {
             buyBtn.disabled = false;
-            buyBtn.innerText = 'Активировать PRO-доступ (Тестовая оплата)';
+            buyBtn.innerText = 'Активировать PRO-доступ';
         }
     }
 </script>
@@ -549,25 +531,21 @@
         <p style="line-height: 1.6; color: #8b949e; margin-bottom: 25px;">
             Ты успешно освоил фундамент Go: от переменных и циклов до структур, интерфейсов и работы с памятью. Вводные уроки окончены!
         </p>
-
         <div style="background: #21262d; border-radius: 8px; padding: 20px; text-align: left; margin-bottom: 25px; border-left: 4px solid #58a6ff;">
             <h4 style="margin: 0 0 10px 0; color: #f0f6fc; font-size: 16px;">Хочешь продолжения и PRO-уровни?</h4>
             <p style="margin: 0; font-size: 14px; line-height: 1.6; color: #c9d1d9;">
-                Если тебе понравился тренажер и ты хочешь проходить обучение дальше — напиши мне на почту <a href="mailto:mia928@bk.ru" style="color: #58a6ff; font-weight: bold; text-decoration: none;">mia928@bk.ru</a> о своем намерении.
-                Так я пойму, что есть живая аудитория, и быстрее открою доступ к продвинутым модулям!
+                Напиши мне на почту <a href="mailto:mia928@bk.ru" style="color: #58a6ff; font-weight: bold; text-decoration: none;">mia928@bk.ru</a> — так я пойму что есть живая аудитория и быстрее открою продвинутые модули!
             </p>
         </div>
-
         <div style="background: #1f242c; border: 1px solid #30363d; border-radius: 8px; padding: 15px; text-align: left; margin-bottom: 25px;">
             <span style="font-size: 12px; color: #8b949e; text-transform: uppercase; font-weight: bold; display: block; margin-bottom: 8px;">В PRO-версии тебя ждет:</span>
             <ul style="margin: 0; padding-left: 20px; font-size: 13px; line-height: 1.6; color: #8b949e;">
-                <li><b>Устройство Slices & Maps:</b> указатели, емкость ($cap$), pointer-мутации.</li>
-                <li><b>Конкурентность (Concurrency):</b> Горутины, каналы и оператор <code style="background:#0d1117; padding:2px 4px; border-radius:4px;">select</code>.</li>
-                <li><b>Боевой Backend:</b> напишем HTTP-сервер на Go с роутингом и БД.</li>
+                <li><b>Устройство Slices & Maps:</b> указатели, емкость (cap), pointer-мутации.</li>
+                <li><b>Конкурентность:</b> Горутины, каналы и оператор select.</li>
+                <li><b>Боевой Backend:</b> HTTP-сервер на Go с роутингом и БД.</li>
             </ul>
         </div>
-
-        <button onclick="document.getElementById('paywall-modal').style.display='none';" style="background: #21262d; color: #c9d1d9; border: 1px solid #30363d; padding: 12px 24px; font-size: 14px; font-weight: bold; border-radius: 6px; cursor: pointer; width: 100%; transition: background 0.2s;">
+        <button onclick="document.getElementById('paywall-modal').style.display='none';" style="background: #21262d; color: #c9d1d9; border: 1px solid #30363d; padding: 12px 24px; font-size: 14px; font-weight: bold; border-radius: 6px; cursor: pointer; width: 100%;">
             Понятно, вернуться к пройденным урокам
         </button>
     </div>
@@ -575,7 +553,7 @@
 
 <div id="cookie-notice" style="display: none; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 15px 25px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); z-index: 10000; align-items: center; justify-content: space-between; width: 90%; max-width: 600px; font-family: sans-serif; color: #c9d1d9; gap: 20px;">
     <div style="font-size: 13px; line-height: 1.5; text-align: left;">
-        Этот сайт использует файлы cookie и локальное хранилище для авторизации и сохранения твоего прогресса обучения. Продолжая использовать тренажер, ты соглашаешься с их использованием.
+        Этот сайт использует файлы cookie и локальное хранилище для сохранения твоего прогресса обучения.
     </div>
     <button onclick="acceptCookies()" style="background: #238636; color: #ffffff; border: none; padding: 8px 20px; font-size: 13px; font-weight: bold; border-radius: 4px; cursor: pointer; white-space: nowrap;">
         ОК, принять
@@ -589,19 +567,11 @@
         "mainEntity": [{
             "@type": "Question",
             "name": "Кому подойдет этот тренажер по Go?",
-            "value": "Кому подойдет этот тренажер?",
-            "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "Тренажер спроектирован для абсолютных новичков. Мы используем систему подсказок-трафаретов, которая позволяет нарабатывать мышечную память синтаксиса без унылой зубрежки теории."
-            }
+            "acceptedAnswer": { "@type": "Answer", "text": "Тренажер спроектирован для абсолютных новичков. Система подсказок-трафаретов позволяет нарабатывать мышечную память синтаксиса без унылой зубрежки теории." }
         }, {
             "@type": "Question",
             "name": "Нужно ли устанавливать Go на компьютер для обучения?",
-            "value": "Нужно ли устанавливать Go на компьютер?",
-            "acceptedAnswer": {
-                "@type": "Answer",
-                "text": "Нет, ничего настраивать и скачивать не нужно. Весь код компилируется на удаленном сервере и выдает результат прямо в окно встроенного терминала."
-            }
+            "acceptedAnswer": { "@type": "Answer", "text": "Нет, ничего настраивать не нужно. Весь код компилируется на удаленном сервере и выдает результат прямо в окно встроенного терминала." }
         }]
     }
 </script>
