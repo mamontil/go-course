@@ -204,7 +204,7 @@ export const module4Lessons = [
         title: "Урок 36: 🏁 Отложенный вызов (defer)",
         theory: `
             <h2>Урок 36: 🏁 Отложенный вызов (defer)</h2>
-            <p>Поздравляем! Это финальный урок базового трека! Нам осталось разобрать очень удобный оператор — <code class="inline">defer</code>.</p>
+            <p>Поздравляем! Это финальный урок четвертого раздела! Нам осталось разобрать очень удобный оператор — <code class="inline">defer</code>.</p>
             <p>Инструкция <code class="inline">defer</code> откладывает выполнение указанной функции до того момента, пока текущая функция (в данном случае <code class="inline">main</code>) не завершит работу.</p>
             <p>Это незаменимо на бэкенде для гарантированного освобождения ресурсов: закрытия файлов, сетевых соединений или баз данных, независимо от того, произошли ошибки в коде или нет.</p>
             <hr style="border-color: var(--border-color); margin: 20px 0;">
@@ -222,7 +222,6 @@ export const module4Lessons = [
         `,
         placeholderColor: "#0d1117",
         buildCode: (input) => `package main\n\nimport "fmt"\n\nfunc main() {\n\t${input}\n}`,
-        validate: (stdout) => stdout.replace(/\s+/g, '') === "WorkClose",
-        isLast: true
+        validate: (stdout) => stdout.replace(/\s+/g, '') === "WorkClose"
     }
 ];

@@ -23,6 +23,20 @@
     <noscript><div><img src="https://mc.yandex.ru/watch/110454683" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
     <!-- /Yandex.Metrika counter -->
 
+    <!-- Yandex.Metrika counter -->
+    <script type="text/javascript">
+        (function(m,e,t,r,i,k,a){
+            m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+            m[i].l=1*new Date();
+            for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+            k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+        })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=113119749', 'ym');
+
+        ym(113119749, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+    </script>
+    <noscript><div><img src="https://mc.yandex.ru/watch/113119749" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+    <!-- /Yandex.Metrika counter -->
+
     <!-- Yandex Autoplacement 19553629 -->
     <script src="https://yandex.ru/ads/system/context.js" async></script>
     <script data-page-id="19553629" src="https://yandex.ru/ads/system/ap-loader.js" async></script>
@@ -88,6 +102,10 @@
             <div style="background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 20px;">
                 <h4 style="color: #f0f6fc; margin: 0 0 10px 0;">🏗️ Модуль 4: ООП по-голангски</h4>
                 <p style="color: #8b949e; font-size: 14px; line-height: 1.5; margin: 0;">Объявление структур, создание методов для типов и магия интерфейсов.</p>
+            </div>
+            <div style="background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 20px;">
+                <h4 style="color: #f0f6fc; margin: 0 0 10px 0;">🧠 Модуль 5: Слайсы, мапы и память</h4>
+                <p style="color: #8b949e; font-size: 14px; line-height: 1.5; margin: 0;">len и cap, рост append, опасность общей памяти и стек defer-вызовов.</p>
             </div>
         </div>
 
@@ -286,16 +304,16 @@
         const badge = document.getElementById('pro-badge');
         if (badge) badge.style.display = isProUser ? 'inline-block' : 'none';
 
-        // Все уроки до 36 включительно открыты без регистрации и без прогресса
+        // Все уроки до 40 включительно (разделы 1–5) открыты без регистрации и без прогресса
         let availableLessons = [];
         for (let i = 0; i < lessons.length; i++) {
             const lesson = lessons[i];
 
-            // PRO уроки (id > 36) — только для PRO-пользователей
-            if (!isProUser && lesson.id > 36) break;
+            // PRO уроки (id > 40) — только для PRO-пользователей
+            if (!isProUser && lesson.id > 40) break;
 
             availableLessons.push(lesson);
-            // Больше НЕ останавливаемся на непройденном уроке — все 36 открыты
+            // Больше НЕ останавливаемся на непройденном уроке — все бесплатные уроки открыты
         }
 
         if (availableLessons.length === 0) availableLessons.push(lessons[0]);
@@ -571,7 +589,7 @@
         <div style="font-size: 50px; margin-bottom: 20px;">🚀</div>
         <h2 style="color: #58a6ff; margin-bottom: 15px; font-size: 24px;">Поздравляем! Базовый уровень пройден!</h2>
         <p style="line-height: 1.6; color: #8b949e; margin-bottom: 25px;">
-            Ты успешно освоил фундамент Go: от переменных и циклов до структур, интерфейсов и работы с памятью. Вводные уроки окончены!
+            Ты успешно освоил фундамент Go: от переменных и циклов до структур, интерфейсов, слайсов и работы с памятью. Бесплатный трек окончен!
         </p>
         <div style="background: #21262d; border-radius: 8px; padding: 20px; text-align: left; margin-bottom: 25px; border-left: 4px solid #58a6ff;">
             <h4 style="margin: 0 0 10px 0; color: #f0f6fc; font-size: 16px;">Хочешь продолжения и PRO-уровни?</h4>
@@ -582,8 +600,8 @@
         <div style="background: #1f242c; border: 1px solid #30363d; border-radius: 8px; padding: 15px; text-align: left; margin-bottom: 25px;">
             <span style="font-size: 12px; color: #8b949e; text-transform: uppercase; font-weight: bold; display: block; margin-bottom: 8px;">В PRO-версии тебя ждет:</span>
             <ul style="margin: 0; padding-left: 20px; font-size: 13px; line-height: 1.6; color: #8b949e;">
-                <li><b>Устройство Slices & Maps:</b> указатели, емкость (cap), pointer-мутации.</li>
-                <li><b>Конкурентность:</b> Горутины, каналы и оператор select.</li>
+                <li><b>Указатели и ошибки:</b> разыменование, nil и правильный error handling.</li>
+                <li><b>Конкурентность:</b> Горутины, каналы, select и мьютексы.</li>
                 <li><b>Боевой Backend:</b> HTTP-сервер на Go с роутингом и БД.</li>
             </ul>
         </div>

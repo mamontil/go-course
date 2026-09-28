@@ -7,7 +7,7 @@ export const module5Lessons = [
         title: "Урок 37: Устройство слайса — Длина (len) и Емкость (cap)",
         theory: `
             <h2>Урок 37: Устройство слайса — len и cap</h2>
-            <p>Добро пожаловать в PRO-уровень! Начнем с того, как Go работает с памятью.</p>
+            <p>Добро пожаловать в Раздел 5! Начнем с того, как Go работает с памятью.</p>
             <p>Слайс в Go — это не массив. Под капотом это маленькая структура (SliceHeader), которая содержит три поля:
             <ol>
                 <li><b>Указатель</b> на реальный массив в памяти, где лежат данные.</li>
@@ -120,6 +120,7 @@ export const module5Lessons = [
         `,
         placeholderColor: "#0d1117",
         buildCode: (input) => `package main\n\nimport "fmt"\n\nfunc main() {\n\t${input}\n}`,
-        validate: (stdout) => stdout.trim() === "CBA"
+        validate: (stdout) => stdout.trim() === "CBA",
+        isLast: true
     }
 ];
