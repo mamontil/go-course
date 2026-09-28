@@ -3,13 +3,12 @@
     <!-- Главная страница -->
     <url>
         <loc>https://go.zanyatsya.ru/</loc>
-        <lastmod>2026-07-09</lastmod>
-        <changefreq>monthly</changefreq>
+        <lastmod>2026-09-28</lastmod>
+        <changefreq>weekly</changefreq>
         <priority>1.0</priority>
     </url>
 
-    <!-- Уроки с 1 по 36 -->
-    <!-- Генерация ссылок для каждого урока -->
+    <!-- Бесплатные уроки с 1 по 40 (разделы 1-5) -->
     <script>
         // Это концепт, чтобы ты понимал логику,
         // ниже готовый XML-блок для вставки

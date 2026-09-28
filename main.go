@@ -65,21 +65,23 @@ func main() {
 
 	initDatabase()
 
-	fs := http.FileServer(http.Dir("./frontend"))
-	http.Handle("/", fs)
+	mux := http.NewServeMux()
 
-	http.HandleFunc("/api/auth/register", handleRegister)
-	http.HandleFunc("/api/auth/login", handleLogin)
-	http.HandleFunc("/api/lessons/progress", handleGetProgress)
-	http.HandleFunc("/api/lessons/verify", handleVerify)
-	http.HandleFunc("/api/lessons/save-progress", handleSaveProgress)
+	fs := http.FileServer(http.Dir("./frontend"))
+	mux.Handle("/", fs)
+
+	mux.HandleFunc("/api/auth/register", handleRegister)
+	mux.HandleFunc("/api/auth/login", handleLogin)
+	mux.HandleFunc("/api/lessons/progress", handleGetProgress)
+	mux.HandleFunc("/api/lessons/verify", handleVerify)
+	mux.HandleFunc("/api/lessons/save-progress", handleSaveProgress)
 
 	// Наш новый тестовый эндпоинт для эмуляции успешной оплаты
-	http.HandleFunc("/api/auth/test-pay", handleTestPay)
+	mux.HandleFunc("/api/auth/test-pay", handleTestPay)
 
 	port := ":8081"
 	fmt.Printf("🚀 Сервер запущен на http://localhost%s\n", port)
-	if err := http.ListenAndServe(port, nil); err != nil {
+	if err := http.ListenAndServe(port, securityHeaders(mux)); err != nil {
 		log.Fatalf("Ошибка запуска сервера: %v", err)
 	}
 }
@@ -367,4 +369,28 @@ func handleTestPay(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]interface{}{"success": true, "message": "PRO статус успешно активирован!"})
+}
+
+// securityHeaders добавляет базовые защитные заголовки и управляет кэшированием статики:
+// HTML всегда актуален (no-cache), JS/CSS перечитываются каждые 5 минут, картинки кэшируются надолго.
+func securityHeaders(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("X-Content-Type-Options", "nosniff")
+		w.Header().Set("X-Frame-Options", "SAMEORIGIN")
+		w.Header().Set("Referrer-Policy", "strict-origin-when-cross-origin")
+		w.Header().Set("Permissions-Policy", "camera=(), microphone=(), geolocation=()")
+
+		switch {
+		case strings.HasPrefix(r.URL.Path, "/api/"):
+			w.Header().Set("Cache-Control", "no-store")
+		case r.URL.Path == "/" || strings.HasSuffix(r.URL.Path, ".html"):
+			w.Header().Set("Cache-Control", "no-cache")
+		case strings.HasSuffix(r.URL.Path, ".js"), strings.HasSuffix(r.URL.Path, ".css"):
+			w.Header().Set("Cache-Control", "public, max-age=300, must-revalidate")
+		case strings.HasSuffix(r.URL.Path, ".png"), strings.HasSuffix(r.URL.Path, ".ico"), strings.HasSuffix(r.URL.Path, ".jpg"), strings.HasSuffix(r.URL.Path, ".svg"):
+			w.Header().Set("Cache-Control", "public, max-age=86400")
+		}
+
+		next.ServeHTTP(w, r)
+	})
 }

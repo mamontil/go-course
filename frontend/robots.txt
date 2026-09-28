@@ -4,3 +4,4 @@ Allow: /index.html
 Disallow: /api/
 
 Sitemap: https://go.zanyatsya.ru/sitemap.xml
+Host: go.zanyatsya.ru

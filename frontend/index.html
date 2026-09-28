@@ -6,22 +6,26 @@
     <title>Интерактивный курс Go для начинающих | Учись Golang бесплатно с нуля</title>
     <meta name="description" content="Бесплатный интерактивный тренажер языка Go (Golang). Обучение программированию с нуля прямо в браузере. Подходит для новичков, взрослых и детей. Прокачай мышечную память синтаксиса!">
     <meta name="keywords" content="go курс, golang обучение, тренажер go, программирование для детей, выучить go с нуля, интерактивный учебник golang">
+    <link rel="canonical" id="canonical-link" href="https://go.zanyatsya.ru/">
+    <meta name="theme-color" content="#0a0e17">
+
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Go-Тренажер">
+    <meta property="og:locale" content="ru_RU">
+    <meta property="og:title" content="Интерактивный курс Go для начинающих | Учись Golang бесплатно с нуля">
+    <meta property="og:description" content="Бесплатный тренажер Go (Golang) в браузере: пиши код с первой секунды по умным трафаретам. Реальный компилятор, 94 урока, без установки.">
+    <meta property="og:url" content="https://go.zanyatsya.ru/">
+    <meta property="og:image" content="https://go.zanyatsya.ru/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Интерактивный курс Go — бесплатно, прямо в браузере">
+    <meta name="twitter:description" content="94 урока Go (Golang) с реальным компилятором и трафаретами-подсказками. Начни за 10 секунд, без установки.">
+    <meta name="twitter:image" content="https://go.zanyatsya.ru/og-image.png">
+    <link rel="preload" as="image" href="/og-image.png" fetchpriority="low">
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <meta name="yandex-verification" content="09c23db0f0df7485" />
-
-    <!-- Yandex.Metrika counter -->
-    <script type="text/javascript">
-        (function(m,e,t,r,i,k,a){
-            m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-            m[i].l=1*new Date();
-            for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
-            k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
-        })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110454683', 'ym');
-        ym(110454683, 'init', {ssr:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
-    </script>
-    <noscript><div><img src="https://mc.yandex.ru/watch/110454683" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
-    <!-- /Yandex.Metrika counter -->
 
     <!-- Yandex.Metrika counter -->
     <script type="text/javascript">
@@ -65,6 +69,11 @@
                 <button class="btn btn-cta" onclick="showAppView()">Начать обучение бесплатно ➜</button>
                 <p class="cta-subtext">Без регистрации. Без ввода банковских карт. Полностью бесплатно.</p>
             </div>
+            <div class="stats-row" aria-label="Статистика курса">
+                <div class="stat"><span class="stat-num" id="stat-lessons">40</span><span class="stat-label">бесплатных уроков</span></div>
+                <div class="stat"><span class="stat-num" id="stat-modules">5</span><span class="stat-label">разделов уже открыто</span></div>
+                <div class="stat"><span class="stat-num" id="stat-total">94</span><span class="stat-label">урока написано</span></div>
+            </div>
         </div>
 
         <div class="features-grid">
@@ -84,7 +93,7 @@
     </section>
 
     <section class="seo-section" style="max-width: 1200px; margin: 60px auto; padding: 0 20px; font-family: sans-serif;">
-        <h2 style="text-align: center; color: #58a6ff; margin-bottom: 40px; font-size: 28px;">Программа базового курса (Бесплатно)</h2>
+        <h2 style="text-align: center; color: #58a6ff; margin-bottom: 40px; font-size: 28px;">Программа бесплатного курса — 40 уроков</h2>
 
         <div class="program-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 60px;">
             <div style="background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 20px;">
@@ -109,15 +118,42 @@
             </div>
         </div>
 
+        <div style="background: linear-gradient(135deg, rgba(0,173,216,0.08), rgba(0,210,255,0.02)); border: 1px solid #30363d; border-radius: 12px; padding: 30px; margin-bottom: 60px;">
+            <h3 style="text-align: center; color: #f0f6fc; margin: 0 0 8px 0; font-size: 22px;">⚡ Впереди: 7 продвинутых разделов уже написаны</h3>
+            <p style="text-align: center; color: #8b949e; font-size: 14px; margin: 0 0 24px 0;">54 новых урока ждут своего запуска. Разделы открываются по мере роста аудитории — твоя активность решает, что выйдет следующим.</p>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px;">
+                <div class="proteaser-card"><b>🔍 Указатели и ошибки</b><span>Адреса памяти, nil, error handling и обёртки %w</span></div>
+                <div class="proteaser-card"><b>🌀 Конкурентность</b><span>Горутины, каналы, select, WaitGroup и мьютексы</span></div>
+                <div class="proteaser-card"><b>🧮 Паттерны Go</b><span>Worker pool, pipeline, fan-in, rate limiting, atomic</span></div>
+                <div class="proteaser-card"><b>🧬 Дженерики</b><span>cmp.Ordered, generic struct, io-интерфейсы, композиция</span></div>
+                <div class="proteaser-card"><b>📚 Стандартная библиотека</b><span>JSON-теги, strconv, sort, time, type switch</span></div>
+                <div class="proteaser-card"><b>🏗️ Боевой Backend</b><span>Handler'ы, роутер, middleware, очереди задач</span></div>
+                <div class="proteaser-card"><b>✅ Качество кода</b><span>Табличные тесты, zero values, strings.Builder, рефакторинг</span></div>
+            </div>
+            <p style="text-align: center; margin: 24px 0 0 0; font-size: 14px; color: #8b949e;">Хочешь, чтобы закрытые разделы вышли быстрее? Пиши на <a href="mailto:mia928@bk.ru" style="color: #58a6ff; text-decoration: none; font-weight: bold;">mia928@bk.ru</a> — и поддержни проект кнопкой внизу страницы ❤</p>
+        </div>
+
         <h2 style="text-align: center; color: #58a6ff; margin-bottom: 30px; font-size: 28px;">Часто задаваемые вопросы</h2>
         <div class="faq-block" style="max-width: 800px; margin: 0 auto 60px auto;">
             <div style="border-bottom: 1px solid #30363d; padding: 15px 0;">
                 <h4 style="color: #f0f6fc; margin: 0 0 8px 0; font-size: 16px;">Кому подойдет этот тренажер?</h4>
-                <p style="color: #8b949e; font-size: 14px; line-height: 1.6; margin: 0;">Тренажер спроектирован для абсолютных новичков. Мы используем систему подсказок-трафаретов, которая позволяет нарабатывать мышечную память синтаксиса без унылой зубрежки теории.</p>
+                <p style="color: #8b949e; font-size: 14px; line-height: 1.6; margin: 0;">Тренажер спроектирован для абсолютных новичков. Мы используем систему подсказок-трафаретов, которая позволяет нарабатывать мышечную память синтаксиса без унылой зубрежки теории. Справятся даже дети от 10 лет.</p>
             </div>
             <div style="border-bottom: 1px solid #30363d; padding: 15px 0;">
                 <h4 style="color: #f0f6fc; margin: 0 0 8px 0; font-size: 16px;">Нужно ли устанавливать Go на компьютер?</h4>
                 <p style="color: #8b949e; font-size: 14px; line-height: 1.6; margin: 0;">Нет, ничего настраивать и скачивать не нужно. Весь код компилируется на удаленном сервере и выдает результат прямо в окно встроенного терминала.</p>
+            </div>
+            <div style="border-bottom: 1px solid #30363d; padding: 15px 0;">
+                <h4 style="color: #f0f6fc; margin: 0 0 8px 0; font-size: 16px;">Это правда бесплатно?</h4>
+                <p style="color: #8b949e; font-size: 14px; line-height: 1.6; margin: 0;">Да. Все уроки базового трека — первые пять разделов курса — открыты без регистрации и оплаты. Достаточно написать код по трафарету и запустить его.</p>
+            </div>
+            <div style="border-bottom: 1px solid #30363d; padding: 15px 0;">
+                <h4 style="color: #f0f6fc; margin: 0 0 8px 0; font-size: 16px;">Что откроется после бесплатных уроков?</h4>
+                <p style="color: #8b949e; font-size: 14px; line-height: 1.6; margin: 0;">В разработке 7 продвинутых разделов: указатели и ошибки, конкурентность, дженерики, стандартная библиотека и боевой backend. Они открываются по мере роста аудитории — напиши автору на почту, чтобы ускорить запуск.</p>
+            </div>
+            <div style="border-bottom: 1px solid #30363d; padding: 15px 0;">
+                <h4 style="color: #f0f6fc; margin: 0 0 8px 0; font-size: 16px;">Останется ли мой прогресс?</h4>
+                <p style="color: #8b949e; font-size: 14px; line-height: 1.6; margin: 0;">Да. Без регистрации прогресс хранится локально в браузере, а после создания аккаунта синхронизируется с сервером и не теряется при смене устройства.</p>
             </div>
         </div>
     </section>
@@ -128,7 +164,7 @@
         <h1>Быстрый Старт в Go 🚀</h1>
         <div class="header-right">
             <span id="pro-badge" style="display: none; background: #238636; color: #fff; padding: 4px 8px; font-size: 12px; font-weight: bold; border-radius: 4px; margin-right: 15px;">PRO ACCOUNT</span>
-            <select id="lesson-selector" class="navigation-select" onchange="switchLesson(this.value)"></select>
+            <select id="lesson-selector" class="navigation-select" aria-label="Выбор урока" onchange="switchLesson(this.value)"></select>
             <button class="btn-logout" onclick="showLandingView()">На главную</button>
             <button id="logout-btn" class="btn-logout" style="display: none;" onclick="logout()">Выйти</button>
         </div>
@@ -278,6 +314,19 @@
 
         document.getElementById('landing-view').style.display = 'block';
         document.getElementById('app-view').style.display = 'none';
+
+        const canon = document.getElementById('canonical-link');
+        if (canon) canon.href = 'https://go.zanyatsya.ru/';
+    }
+
+    function initLandingStats() {
+        if (!window.lessons) return;
+        const free = window.lessons.filter(l => l.id <= 40);
+        const uniq = arr => [...new Set(arr)];
+        const setText = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+        setText('stat-lessons', free.length);
+        setText('stat-modules', uniq(free.map(l => l.moduleTitle)).length);
+        setText('stat-total', window.lessons.length);
     }
     function updateHeaderButtons() {
         const logoutBtn = document.getElementById('logout-btn');
@@ -351,6 +400,8 @@
 
         document.title = lesson.title + " | Go-Тренажер";
         document.querySelector('meta[name="description"]').setAttribute("content", lesson.title + " — разбор темы на практике.");
+        const canon = document.getElementById('canonical-link');
+        if (canon) canon.href = 'https://go.zanyatsya.ru/?id=' + lesson.id;
 
         document.getElementById('lesson-selector').value = index;
         document.getElementById('theory-content').innerHTML = lesson.theory;
@@ -561,7 +612,10 @@
         if (event.target == aModal) aModal.style.display = "none";
     }
 
-    window.onload = checkAuthOnLoad;
+    window.onload = function () {
+        checkAuthOnLoad();
+        initLandingStats();
+    };
 
     async function buyProCourse() {
         const buyBtn = document.getElementById('buy-btn');
@@ -625,15 +679,52 @@
 <script type="application/ld+json">
     {
         "@context": "https://schema.org",
-        "@type": "FAQPage",
-        "mainEntity": [{
-            "@type": "Question",
-            "name": "Кому подойдет этот тренажер по Go?",
-            "acceptedAnswer": { "@type": "Answer", "text": "Тренажер спроектирован для абсолютных новичков. Система подсказок-трафаретов позволяет нарабатывать мышечную память синтаксиса без унылой зубрежки теории." }
+        "@graph": [{
+            "@type": "WebSite",
+            "@id": "https://go.zanyatsya.ru/#website",
+            "name": "Go-Тренажер",
+            "url": "https://go.zanyatsya.ru/",
+            "inLanguage": "ru"
         }, {
-            "@type": "Question",
-            "name": "Нужно ли устанавливать Go на компьютер для обучения?",
-            "acceptedAnswer": { "@type": "Answer", "text": "Нет, ничего настраивать не нужно. Весь код компилируется на удаленном сервере и выдает результат прямо в окно встроенного терминала." }
+            "@type": "Course",
+            "@id": "https://go.zanyatsya.ru/#course",
+            "name": "Интерактивный курс Go (Golang) с нуля",
+            "description": "Бесплатный интерактивный тренажер языка Go: 94 урока с реальным компилятором в браузере, от переменных до конкурентности и дженериков.",
+            "inLanguage": "ru",
+            "isAccessibleForFree": true,
+            "provider": {
+                "@type": "Organization",
+                "name": "Go-Тренажер",
+                "url": "https://go.zanyatsya.ru/"
+            },
+            "hasCourseInstance": {
+                "@type": "CourseInstance",
+                "courseMode": "online",
+                "courseWorkload": "PT40H"
+            }
+        }, {
+            "@type": "FAQPage",
+            "mainEntity": [{
+                "@type": "Question",
+                "name": "Кому подойдет этот тренажер?",
+                "acceptedAnswer": { "@type": "Answer", "text": "Тренажер спроектирован для абсолютных новичков. Система подсказок-трафаретов позволяет нарабатывать мышечную память синтаксиса без унылой зубрежки теории. Справятся даже дети от 10 лет." }
+            }, {
+                "@type": "Question",
+                "name": "Нужно ли устанавливать Go на компьютер для обучения?",
+                "acceptedAnswer": { "@type": "Answer", "text": "Нет, ничего настраивать не нужно. Весь код компилируется на удаленном сервере и выдает результат прямо в окно встроенного терминала." }
+            }, {
+                "@type": "Question",
+                "name": "Это правда бесплатно?",
+                "acceptedAnswer": { "@type": "Answer", "text": "Да. Все уроки базового трека — первые пять разделов курса — открыты без регистрации и оплаты. Достаточно написать код по трафарету и запустить его." }
+            }, {
+                "@type": "Question",
+                "name": "Что откроется после бесплатных уроков?",
+                "acceptedAnswer": { "@type": "Answer", "text": "В разработке 7 продвинутых разделов: указатели и ошибки, конкурентность, дженерики, стандартная библиотека и боевой backend. Они открываются по мере роста аудитории — напиши автору на почту, чтобы ускорить запуск." }
+            }, {
+                "@type": "Question",
+                "name": "Останется ли мой прогресс?",
+                "acceptedAnswer": { "@type": "Answer", "text": "Да. Без регистрации прогресс хранится локально в браузере, а после создания аккаунта синхронизируется с сервером и не теряется при смене устройства." }
+            }]
         }]
     }
 </script>
