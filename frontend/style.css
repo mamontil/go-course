@@ -526,6 +526,24 @@ footer a {
 }
 footer a:hover { text-decoration: underline; }
 
+/* ─── SUPPORT LINK ─────────────────────────────── */
+
+.support-link {
+    background: linear-gradient(90deg, var(--go-blue), var(--accent));
+    color: #04121a !important;
+    font-weight: 700;
+    padding: 6px 16px;
+    border-radius: 999px;
+    box-shadow: 0 2px 12px rgba(0, 173, 216, 0.35);
+    transition: transform .15s ease, box-shadow .15s ease;
+}
+.support-link:hover {
+    text-decoration: none !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 18px rgba(0, 210, 255, 0.55);
+}
+.support-link:active { transform: translateY(0); }
+
 /* ─── PRO BADGE ────────────────────────────────── */
 
 #pro-badge {
