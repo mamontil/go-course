@@ -309,6 +309,45 @@
         if (cookieNotice) cookieNotice.style.display = 'none';
     }
 
+    // ─── Нюанс «поддержать проект»: показываем через 3 минуты активного
+    // времяпрепровождения на сайте, не чаще одного раза в 2 недели ───
+    const SUPPORT_GOAL_MS = 3 * 60 * 1000;
+    const SUPPORT_COOLDOWN_MS = 14 * 24 * 60 * 60 * 1000;
+    const SUPPORT_STORAGE_KEY = 'support_prompt_shown_at';
+
+    function initSupportNudge() {
+        const lastShown = Number(localStorage.getItem(SUPPORT_STORAGE_KEY) || 0);
+        if (lastShown && Date.now() - lastShown < SUPPORT_COOLDOWN_MS) return;
+
+        let visibleMs = 0;
+        let lastTick = Date.now();
+
+        const timer = setInterval(() => {
+            const now = Date.now();
+            // Считаем только время, когда вкладка активна (ушел в другую таб — таймер спит)
+            if (document.visibilityState === 'visible') {
+                visibleMs += now - lastTick;
+            }
+            lastTick = now;
+
+            if (visibleMs < SUPPORT_GOAL_MS) return;
+
+            // Не всплываем поверх открытых диалогов — подождем следующего тика
+            const authModal = document.getElementById('auth-modal');
+            const privacyModal = document.getElementById('privacy-modal');
+            if (authModal.style.display === 'flex' || privacyModal.style.display === 'flex') return;
+
+            clearInterval(timer);
+            localStorage.setItem(SUPPORT_STORAGE_KEY, String(Date.now()));
+            const supportModal = document.getElementById('support-modal');
+            if (supportModal) supportModal.style.display = 'flex';
+        }, 5000);
+    }
+
+    function closeSupportModal() {
+        document.getElementById('support-modal').style.display = 'none';
+    }
+
     function showLandingView() {
         window.history.pushState({}, '', window.location.pathname);
 
@@ -608,13 +647,16 @@
     window.onclick = function(event) {
         const pModal = document.getElementById('privacy-modal');
         const aModal = document.getElementById('auth-modal');
+        const sModal = document.getElementById('support-modal');
         if (event.target == pModal) pModal.style.display = "none";
         if (event.target == aModal) aModal.style.display = "none";
+        if (event.target == sModal) sModal.style.display = "none";
     }
 
     window.onload = function () {
         checkAuthOnLoad();
         initLandingStats();
+        initSupportNudge();
     };
 
     async function buyProCourse() {
@@ -664,6 +706,22 @@
         <button onclick="document.getElementById('paywall-modal').style.display='none';" style="background: #21262d; color: #c9d1d9; border: 1px solid #30363d; padding: 12px 24px; font-size: 14px; font-weight: bold; border-radius: 6px; cursor: pointer; width: 100%;">
             Понятно, вернуться к пройденным урокам
         </button>
+    </div>
+</div>
+
+<div id="support-modal" class="modal">
+    <div class="modal-content" style="max-width: 440px; text-align: center; padding: 34px 28px;">
+        <div style="font-size: 42px; margin-bottom: 14px;">☕</div>
+        <h2 style="margin: 0 0 12px 0; font-size: 20px; color: var(--accent);">Понравилось учиться?</h2>
+        <p style="color: var(--text-muted); font-size: 14px; line-height: 1.65; margin: 0 0 24px 0;">
+            Go-Тренажер сделан с душой и остается бесплатным. Если он помог тебе понять Go —
+            можешь угостить автора кофе: так проект будет жить, а новые разделы выйдут быстрее.
+        </p>
+        <a href="https://messenger.sbrf.ru/sl/vfxgeYh0gJxFJgntZ" target="_blank" rel="noopener noreferrer"
+           class="support-big-btn" onclick="closeSupportModal()">Поддержать проект ❤</a>
+        <div style="margin-top: 14px;">
+            <button class="support-later-btn" onclick="closeSupportModal()">Может быть позже</button>
+        </div>
     </div>
 </div>
 

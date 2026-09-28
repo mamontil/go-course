@@ -544,6 +544,37 @@ footer a:hover { text-decoration: underline; }
 }
 .support-link:active { transform: translateY(0); }
 
+/* ─── SUPPORT MODAL (3-min nudge) ──────────────── */
+
+.support-big-btn {
+    display: inline-block;
+    background: linear-gradient(90deg, var(--go-blue), var(--accent));
+    color: #04121a;
+    font-size: 15px;
+    font-weight: 700;
+    text-decoration: none;
+    padding: 13px 34px;
+    border-radius: 999px;
+    box-shadow: 0 4px 20px rgba(0, 173, 216, 0.35);
+    transition: transform .15s ease, box-shadow .15s ease;
+}
+.support-big-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 26px rgba(0, 210, 255, 0.55);
+}
+.support-big-btn:active { transform: translateY(0); }
+
+.support-later-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 13px;
+    cursor: pointer;
+    padding: 6px 10px;
+    transition: color .15s;
+}
+.support-later-btn:hover { color: var(--text); }
+
 /* ─── HERO STATS ───────────────────────────────── */
 
 .stats-row {
