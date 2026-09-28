@@ -120,7 +120,6 @@ export const module5Lessons = [
         `,
         placeholderColor: "#0d1117",
         buildCode: (input) => `package main\n\nimport "fmt"\n\nfunc main() {\n\t${input}\n}`,
-        validate: (stdout) => stdout.trim() === "CBA",
-        isLast: true
+        validate: (stdout) => stdout.trim() === "CBA"
     }
 ];

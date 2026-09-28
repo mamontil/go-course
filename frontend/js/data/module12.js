@@ -281,6 +281,7 @@ export const module12Lessons = [
         placeholderColor: "#0d1117",
         buildCode: (input) => `package main\n\nimport "fmt"\n\nfunc main() {\n\tin := make(chan int, 3)\n\tout := make(chan int, 3)\n\tfor _, n := range []int{1, 2, 3} {\n\t\tin <- n\n\t}\n\tclose(in)\n\tgo func() {\n\t\tfor n := range in {\n\t\t\tout <- n * n\n\t\t}\n\t\t${input}\n\t}()\n\ttotal := 0\n\tfor v := range out {\n\t\ttotal += v\n\t}\n\tfmt.Println("total:", total)\n}`,
         validate: (stdout) => stdout.trim() === "total: 14",
-        errorMessage: "Deadlock: потребитель ждёт, пока стадия сообщит о конце. Закрой канал."
+        errorMessage: "Deadlock: потребитель ждёт, пока стадия сообщит о конце. Закрой канал.",
+        isLast: true
     }
 ];

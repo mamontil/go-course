@@ -270,6 +270,21 @@ body {
 }
 .navigation-select:focus { border-color: var(--accent); }
 
+/* Двухуровневая навигация: раздел → урок */
+.nav-selectors {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.nav-module {
+    width: 270px !important;
+    border-left: 3px solid var(--go-blue);
+    font-weight: 600;
+}
+.nav-lesson {
+    width: 330px !important;
+}
+
 /* ─── MAIN LAYOUT ──────────────────────────────── */
 
 #app-view {
@@ -685,7 +700,9 @@ footer a:hover { text-decoration: underline; }
     #app-view header { padding: 10px 14px; gap: 8px; flex-wrap: wrap; }
     #app-view header h1 { font-size: 14px; }
     /* 16px обязателен: меньший кегль у select/input вызывает авто-зум на iOS */
-    .navigation-select { max-width: 160px; font-size: 16px; padding: 6px 8px; }
+    .navigation-select { font-size: 16px; padding: 6px 8px; }
+    .nav-selectors { width: 100%; order: -1; }
+    .nav-module, .nav-lesson { width: 50% !important; max-width: 50%; min-width: 0; }
 
     /* Main layout — вертикально на мобиле */
     .main-container {
@@ -763,8 +780,9 @@ footer a:hover { text-decoration: underline; }
 @media (max-width: 480px) {
     .hero-content h1 { font-size: 22px; }
     .features-grid .feature-card { padding: 16px; }
-    .navigation-select { max-width: 130px; }
     #app-view header h1 { display: none; } /* На очень малых — убираем заголовок, оставляем только селектор */
+    .nav-module { width: 42% !important; max-width: 42%; }
+    .nav-lesson { width: 58% !important; max-width: 58%; }
 }
 
 /* ─── SCROLLBARS ───────────────────────────────── */
