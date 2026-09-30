@@ -4,260 +4,203 @@ export const module8Lessons = [
         id: 56,
         moduleId: 8,
         moduleTitle: "Раздел 8: Стандартная библиотека и данные",
-        title: "Урок 56: Интерфейс any и проверка типа",
+        title: "Урок 56: any и проверка типа",
         theory: `
-            <h2>Урок 56: any — коробка для чего угодно</h2>
-            <p>Тип <code class="inline">any</code> (он же <code class="inline">interface{}</code>) — это универсальная «коробка», в которую можно положить значение любого типа: число, строку, struct.</p>
-            <p>Но чтобы достать содержимое, коробку надо открыть — сделать <b>проверку типа</b>: <code class="inline">value.(string)</code>. Если тип не совпал, программа запаникует, поэтому в бою используют безопасную форму с двумя возвращаемыми значениями: <code class="inline">s, ok := value.(string)</code>.</p>
-            <p>С «коробкой» any математические операции недоступны — сначала распакуй значение в конкретный тип.</p>
+            <h2>Урок 56: Коробка any</h2>
+            <p><code class="inline">var v any = ...</code> хранит значение любого типа. Вернуть конкретный тип можно проверкой <code class="inline">v.(string)</code> — иначе арифметика/len недоступны.</p>
             <hr style="border-color: var(--border-color); margin: 20px 0;">
             <h3>Задание:</h3>
-            <p>В переменную <code class="inline">value</code> типа <code class="inline">any</code> упакован float64. Распакуй его обратно как <code class="inline">value.(float64)</code> — программа умножит число на 2 и напечатает <code class="inline">6</code>.</p>
-        `,
-        renderEditor: () => `
-            <span style="color: #ff7b72;">package</span> main<br><br>
-            <span style="color: #ff7b72;">import</span> <span style="color: #a5d6ff;">"fmt"</span><br><br>
-            <span style="color: #ff7b72;">func</span> <span style="color: #d2a8ff;">main</span>() {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ff7b72;">var</span> value <span style="color: #79c0ff;">any</span> = <span style="color: #79c0ff;">3.14</span><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;num := <textarea id="user-code" rows="2" placeholder='value.(float64)' style="color: #79c0ff; font-weight: normal;"></textarea><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;fmt.Printf(<span style="color: #a5d6ff;">"%.0f\\n"</span>, num*<span style="color: #79c0ff;">2</span>)<br>
-            }
-        `,
+            <p>В main: <code class="inline">var val any = "golang"</code>; распакуй в <code class="inline">s := val.(string)</code> и напечатай <code class="inline">len(s)</code>.</p>
+            <p><b>Ожидаемый вывод:</b> <code class="inline">6</code></p>`,
+        renderEditor: () => `\n            package main<br><br>import "fmt"<br><br><textarea id="user-code" rows="7" placeholder='func main() {\n    var val any = &quot;golang&quot;\n    s := val.(string)\n    fmt.Println(len(s))\n}' style="color: #79c0ff; font-weight: normal;"></textarea>\n        `,
         placeholderColor: "#0d1117",
-        buildCode: (input) => `package main\n\nimport "fmt"\n\nfunc main() {\n\tvar value any = 3.14\n\tnum := ${input}\n\tfmt.Printf("%.0f\\n", num*2)\n}`,
+        buildCode: (input) => `package main
+
+import "fmt"
+
+${input}
+`,
         validate: (stdout) => stdout.trim() === "6"
     },
     {
         id: 57,
         moduleId: 8,
         moduleTitle: "Раздел 8: Стандартная библиотека и данные",
-        title: "Урок 57: Type switch — ветвление по типу",
+        title: "Урок 57: Type switch",
         theory: `
-            <h2>Урок 57: Type switch</h2>
-            <p>Когда типов-кандидатов несколько, проверок <code class="inline">x.(T)</code> подряд не хватит. Для этого есть <b>type switch</b>:</p>
-            <pre><code class="block">switch v := i.(type) {
-case int:
-    // v имеет тип int
-case string:
-    // v имеет тип string
-}</code></pre>
-            <p>Переменная <code class="inline">v</code> в каждом кейсе автоматически получает нужный тип — можно сразу вызывать профильные методы. Так пишут универсальные сериализаторы и логгеры.</p>
+            <h2>Урок 57: Ветвление по типу</h2>
+            <p><code class="inline">switch x := v.(type)</code> в каждом кейсе даёт x уже нужным типом: <code class="inline">case int:</code>, <code class="inline">case string:</code>, <code class="inline">default:</code>.</p>
             <hr style="border-color: var(--border-color); margin: 20px 0;">
             <h3>Задание:</h3>
-            <p>Функция <code class="inline">describe</code> уже готова. Вызови её с числом <code class="inline">42</code> и выведи результат — программа должна напечатать <code class="inline">int 42</code>.</p>
-        `,
-        renderEditor: () => `
-            <span style="color: #ff7b72;">package</span> main<br><br>
-            <span style="color: #ff7b72;">import</span> (<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #a5d6ff;">"fmt"</span><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #a5d6ff;">"strconv"</span><br>
-            )<br><br>
-            <span style="color: #ff7b72;">func</span> <span style="color: #d2a8ff;">describe</span>(i <span style="color: #79c0ff;">any</span>) <span style="color: #79c0ff;">string</span> {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ff7b72;">switch</span> v := i.(<span style="color: #ff7b72;">type</span>) {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ff7b72;">case</span> <span style="color: #79c0ff;">int</span>:<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ff7b72;">return</span> <span style="color: #a5d6ff;">"int "</span> + strconv.Itoa(v)<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ff7b72;">case</span> <span style="color: #79c0ff;">string</span>:<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ff7b72;">return</span> <span style="color: #a5d6ff;">"string "</span> + v<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ff7b72;">default</span>:<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ff7b72;">return</span> <span style="color: #a5d6ff;">"unknown"</span><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;}<br>
-            }<br><br>
-            <span style="color: #ff7b72;">func</span> <span style="color: #d2a8ff;">main</span>() {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<textarea id="user-code" rows="2" placeholder='fmt.Println(describe(42))' style="color: #79c0ff; font-weight: normal;"></textarea><br>
-            }
-        `,
+            <p>Напиши <code class="inline">func describe(v any) string</code>: для int верни <code class="inline">fmt.Sprintf("int %d", x)</code>, для string — «string » + x, иначе «unknown». В main напечатай describe(42).</p>
+            <p><b>Ожидаемый вывод:</b> <code class="inline">int 42</code></p>`,
+        renderEditor: () => `\n            package main<br><br>import "fmt"<br><br><textarea id="user-code" rows="14" placeholder='func describe(v any) string {\n    switch x := v.(type) {\n    case int:\n        return fmt.Sprintf(&quot;int %d&quot;, x)\n    case string:\n        return &quot;string &quot; + x\n    default:\n        return &quot;unknown&quot;\n    }\n}\n\nfunc main() {\n    fmt.Println(describe(42))\n}' style="color: #79c0ff; font-weight: normal;"></textarea>\n        `,
         placeholderColor: "#0d1117",
-        buildCode: (input) => `package main\n\nimport (\n\t"fmt"\n\t"strconv"\n)\n\nfunc describe(i any) string {\n\tswitch v := i.(type) {\n\tcase int:\n\t\treturn "int " + strconv.Itoa(v)\n\tcase string:\n\t\treturn "string " + v\n\tdefault:\n\t\treturn "unknown"\n\t}\n}\n\nfunc main() {\n\t${input}\n}`,
+        buildCode: (input) => `package main
+
+import "fmt"
+
+${input}
+`,
         validate: (stdout) => stdout.trim() === "int 42"
     },
     {
         id: 58,
         moduleId: 8,
         moduleTitle: "Раздел 8: Стандартная библиотека и данные",
-        title: "Урок 58: JSON — сериализация структур",
+        title: "Урок 58: JSON — сериализация",
         theory: `
-            <h2>Урок 58: JSON.Marshal</h2>
-            <p>JSON — язык общения бэкенда: API, конфиги, логи. В Go за него отвечает пакет <code class="inline">encoding/json</code>.</p>
-            <p><code class="inline">json.Marshal(v)</code> превращает структуру в массив байтов JSON. Чтобы поле попало в JSON, оно <b>обязательно должно быть экспортируемым</b> (с большой буквы), а каноническое имя задаётся тегом: <code class="inline">json:"name"</code> в обратных кавычках.</p>
-            <p>Без тега поле всё равно уйдёт в JSON, но с именем «как в Go» — Name вместо name. Для API это моветон.</p>
+            <h2>Урок 58: json.Marshal</h2>
+            <p>Структура User с тегами <code class="inline">json:"name"</code> и <code class="inline">json:"age"</code> дана в скелете. <code class="inline">json.Marshal(u)</code> возвращает <code class="inline">([]byte, error)</code> — байты JSON. Печатать нужно через <code class="inline">string(data)</code>.</p>
             <hr style="border-color: var(--border-color); margin: 20px 0;">
             <h3>Задание:</h3>
-            <p>Структура уже упакована в <code class="inline">data</code>. Выведи её как строку через <code class="inline">fmt.Println(string(data))</code> — ожидается точный JSON из двух полей.</p>
-        `,
-        renderEditor: () => `
-            <span style="color: #ff7b72;">package</span> main<br><br>
-            <span style="color: #ff7b72;">import</span> (<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #a5d6ff;">"encoding/json"</span><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #a5d6ff;">"fmt"</span><br>
-            )<br><br>
-            <span style="color: #ff7b72;">type</span> User <span style="color: #ff7b72;">struct</span> {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;Name <span style="color: #79c0ff;">string</span> <span style="color: #a5d6ff;">&#96;json:"name"&#96;</span><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;Age&nbsp; <span style="color: #79c0ff;">int</span>&nbsp;&nbsp; <span style="color: #a5d6ff;">&#96;json:"age"&#96;</span><br>
-            }<br><br>
-            <span style="color: #ff7b72;">func</span> <span style="color: #d2a8ff;">main</span>() {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;data, _ := json.Marshal(User{"Ann", <span style="color: #79c0ff;">25</span>})<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<textarea id="user-code" rows="2" placeholder='fmt.Println(string(data))' style="color: #79c0ff; font-weight: normal;"></textarea><br>
-            }
-        `,
+            <p>В main: собери <code class="inline">User{"Ann", 30}</code>, замаршализуй (ошибку проглоти через _) и напечатай строку.</p>
+            <p><b>Ожидаемый вывод:</b> <code class="inline">{"name":"Ann","age":30}</code></p>`,
+        renderEditor: () => `\n            package main<br><br>import (<br>&nbsp;&nbsp;&nbsp;&nbsp;"encoding/json"<br>&nbsp;&nbsp;&nbsp;&nbsp;"fmt"<br>)<br><br>type User struct {<br>&nbsp;&nbsp;&nbsp;&nbsp;Name string &#96;json:"name"&#96;<br>&nbsp;&nbsp;&nbsp;&nbsp;Age  int   &#96;json:"age"&#96;<br>}<br><br><textarea id="user-code" rows="7" placeholder='func main() {\n    u := User{&quot;Ann&quot;, 30}\n    data, _ := json.Marshal(u)\n    fmt.Println(string(data))\n}' style="color: #79c0ff; font-weight: normal;"></textarea>\n        `,
         placeholderColor: "#0d1117",
-        buildCode: (input) => 'package main\n\nimport (\n\t"encoding/json"\n\t"fmt"\n)\n\ntype User struct {\n\tName string `json:"name"`\n\tAge  int    `json:"age"`\n}\n\nfunc main() {\n\tdata, _ := json.Marshal(User{"Ann", 25})\n\t' + input + '\n}',
-        validate: (stdout) => stdout.trim() === '{"name":"Ann","age":25}'
+        buildCode: (input) => `package main
+
+import (
+	"encoding/json"
+	"fmt"
+)
+
+type User struct {
+	Name string \`json:"name"\`
+	Age  int   \`json:"age"\`
+}
+
+${input}
+`,
+        validate: (stdout) => stdout.trim() === "{\"name\":\"Ann\",\"age\":30}"
     },
     {
         id: 59,
         moduleId: 8,
         moduleTitle: "Раздел 8: Стандартная библиотека и данные",
-        title: "Урок 59: JSON — десериализация в структуру",
+        title: "Урок 59: JSON — разбор в структуру",
         theory: `
-            <h2>Урок 59: JSON.Unmarshal</h2>
-            <p>Обратная операция: <code class="inline">json.Unmarshal(bytes, &target)</code> читает JSON и раскладывает поля по структуре-получателю.</p>
-            <p>Вторым аргументом всегда передают <b>указатель</b> (<code class="inline">&amp;b</code>) — иначе unmarshal не сможет заполнить твою переменную, ведь Go копирует аргументы (помнишь урок 42?).</p>
-            <p>Лишние поля в JSON молча игнорируются, а недостающие остаются zero-value. Строгая проверка — это уже уровень <code class="inline">Decoder.DisallowUnknownFields()</code>.</p>
+            <h2>Урок 59: json.Unmarshal</h2>
+            <p>В скелете: Book и строка raw с JSON. <code class="inline">json.Unmarshal([]byte(raw), &amp;b)</code> разберёт JSON в переменную — обязательно по <b>адресу</b> (урок 42!). Имена полей матчатся нечувствительно к регистру.</p>
             <hr style="border-color: var(--border-color); margin: 20px 0;">
             <h3>Задание:</h3>
-            <p>JSON уже распарсен в структуру <code class="inline">b</code>. Выведи <code class="inline">b.Title</code> и <code class="inline">b.Price</code> через Println (в одну строку через пробел) — ожидается <code class="inline">Go Book 10</code>.</p>
-        `,
-        renderEditor: () => `
-            <span style="color: #ff7b72;">package</span> main<br><br>
-            <span style="color: #ff7b72;">import</span> (<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #a5d6ff;">"encoding/json"</span><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #a5d6ff;">"fmt"</span><br>
-            )<br><br>
-            <span style="color: #ff7b72;">type</span> Book <span style="color: #ff7b72;">struct</span> {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;Title <span style="color: #79c0ff;">string</span><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;Price <span style="color: #79c0ff;">int</span><br>
-            }<br><br>
-            <span style="color: #ff7b72;">func</span> <span style="color: #d2a8ff;">main</span>() {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;raw := <span style="color: #a5d6ff;">"{\\"title\\":\\"Go Book\\",\\"price\\":10}"</span><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ff7b72;">var</span> b Book<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;json.Unmarshal([]<span style="color: #79c0ff;">byte</span>(raw), &amp;b)<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<textarea id="user-code" rows="2" placeholder='fmt.Println(b.Title, b.Price)' style="color: #79c0ff; font-weight: normal;"></textarea><br>
-            }
-        `,
+            <p>В main: обяви <code class="inline">var b Book</code>, распакуй raw в &amp;b и напечатай b.Title и b.Price через Println (в одну строку).</p>
+            <p><b>Ожидаемый вывод:</b> <code class="inline">Go 10</code></p>`,
+        renderEditor: () => `\n            package main<br><br>import (<br>&nbsp;&nbsp;&nbsp;&nbsp;"encoding/json"<br>&nbsp;&nbsp;&nbsp;&nbsp;"fmt"<br>)<br><br>type Book struct {<br>&nbsp;&nbsp;&nbsp;&nbsp;Title string<br>&nbsp;&nbsp;&nbsp;&nbsp;Price int<br>}<br><br>const raw = &#96;{"title":"Go","price":10}&#96;<br><br><textarea id="user-code" rows="7" placeholder='func main() {\n    var b Book\n    json.Unmarshal([]byte(raw), &amp;b)\n    fmt.Println(b.Title, b.Price)\n}' style="color: #79c0ff; font-weight: normal;"></textarea>\n        `,
         placeholderColor: "#0d1117",
-        buildCode: (input) => `package main\n\nimport (\n\t"encoding/json"\n\t"fmt"\n)\n\ntype Book struct {\n\tTitle string\n\tPrice int\n}\n\nfunc main() {\n\traw := "{\\"title\\":\\"Go Book\\",\\"price\\":10}"\n\tvar b Book\n\tjson.Unmarshal([]byte(raw), &b)\n\t${input}\n}`,
-        validate: (stdout) => stdout.trim() === "Go Book 10"
+        buildCode: (input) => `package main
+
+import (
+	"encoding/json"
+	"fmt"
+)
+
+type Book struct {
+	Title string
+	Price int
+}
+
+const raw = \`{"title":"Go","price":10}\`
+
+${input}
+`,
+        validate: (stdout) => stdout.trim() === "Go 10"
     },
     {
         id: 60,
         moduleId: 8,
         moduleTitle: "Раздел 8: Стандартная библиотека и данные",
-        title: "Урок 60: strings и strconv — строковые утилиты",
+        title: "Урок 60: strconv.Atoi",
         theory: `
-            <h2>Урок 60: Строки и конвертация</h2>
-            <p>Строка — это байты, а число — это машинное значение. Между ними мостит пакет <code class="inline">strconv</code>: <code class="inline">strconv.Atoi("100")</code> превращает строку в int (от ASCII to integer), а <code class="inline">strconv.Itoa(100)</code> — наоборот.</p>
-            <p>Нельзя просто сложить <code class="inline">"100" + 50</code> — Go заставит сначала сконвертировать типы.</p>
-            <p>Рядом живёт пакет <code class="inline">strings</code> с утилитами <code class="inline">Contains</code>, <code class="inline">Split</code>, <code class="inline">Join</code> и <code class="inline">TrimSpace</code> — весь ежедневный инструментарий бэкендера.</p>
+            <h2>Урок 60: Строка → число</h2>
+            <p><code class="inline">strconv.Atoi("55")</code> возвращает <code class="inline">(int, error)</code>: число и nil, либо ошибку, если строка не число. Пропускать проверку err — плохая привычка.</p>
             <hr style="border-color: var(--border-color); margin: 20px 0;">
             <h3>Задание:</h3>
-            <p>Строка <code class="inline">str := "100"</code> уже сконвертирована в <code class="inline">num</code>. Выведи <code class="inline">num + 50</code> — программа должна напечатать <code class="inline">150</code>.</p>
-        `,
-        renderEditor: () => `
-            <span style="color: #ff7b72;">package</span> main<br><br>
-            <span style="color: #ff7b72;">import</span> (<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #a5d6ff;">"fmt"</span><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #a5d6ff;">"strconv"</span><br>
-            )<br><br>
-            <span style="color: #ff7b72;">func</span> <span style="color: #d2a8ff;">main</span>() {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;str := <span style="color: #a5d6ff;">"100"</span><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;num, _ := strconv.Atoi(str)<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<textarea id="user-code" rows="2" placeholder='fmt.Println(num + 50)' style="color: #79c0ff; font-weight: normal;"></textarea><br>
-            }
-        `,
+            <p>В main: переведи «55» в n с проверкой err (при ошибке печать «bad» и return). Напечатай <code class="inline">n + 45</code>.</p>
+            <p><b>Ожидаемый вывод:</b> <code class="inline">100</code></p>`,
+        renderEditor: () => `\n            package main<br><br>import (<br>&nbsp;&nbsp;&nbsp;&nbsp;"fmt"<br>&nbsp;&nbsp;&nbsp;&nbsp;"strconv"<br>)<br><br><textarea id="user-code" rows="10" placeholder='func main() {\n    n, err := strconv.Atoi(&quot;55&quot;)\n    if err != nil {\n        fmt.Println(&quot;bad&quot;)\n        return\n    }\n    fmt.Println(n + 45)\n}' style="color: #79c0ff; font-weight: normal;"></textarea>\n        `,
         placeholderColor: "#0d1117",
-        buildCode: (input) => `package main\n\nimport (\n\t"fmt"\n\t"strconv"\n)\n\nfunc main() {\n\tstr := "100"\n\tnum, _ := strconv.Atoi(str)\n\t${input}\n}`,
-        validate: (stdout) => stdout.trim() === "150"
+        buildCode: (input) => `package main
+
+import (
+	"fmt"
+	"strconv"
+)
+
+${input}
+`,
+        validate: (stdout) => stdout.trim() === "100"
     },
     {
         id: 61,
         moduleId: 8,
         moduleTitle: "Раздел 8: Стандартная библиотека и данные",
-        title: "Урок 61: Сортировка — sort.Slice и компаратор",
+        title: "Урок 61: sort.Slice с компаратором",
         theory: `
-            <h2>Урок 61: sort.Slice</h2>
-            <p>Пакет <code class="inline">sort</code> умеет сортировать что угодно. Самый гибкий инструмент — <code class="inline">sort.Slice</code>, которому передаёшь слайс и <b>функцию-компаратор</b>.</p>
-            <p>Компаратор <code class="inline">func(i, j int) bool</code> получает индексы двух элементов и отвечает на вопрос: «должен ли элемент i стоять ПЕРЕД элементом j?».</p>
-            <p><code class="inline">s[i] &lt; s[j]</code> — сортировка по возрастанию, <code class="inline">s[i] &gt; s[j]</code> — по убыванию. Так же сортируют и struct-ы: по имени, по цене, по дате.</p>
+            <h2>Урок 61: Сортировка</h2>
+            <p><code class="inline">sort.Slice(nums, func(i, j int) bool { ... })</code> сортирует на месте. Компаратор отвечает на вопрос «элемент i должен идти ПЕРЕД j?». <code class="inline">nums[i] &gt; nums[j]</code> = по убыванию.</p>
             <hr style="border-color: var(--border-color); margin: 20px 0;">
             <h3>Задание:</h3>
-            <p>Отсортируй слайс <code class="inline">nums</code> по убыванию, вернув из компаратора условие <code class="inline">nums[i] > nums[j]</code>. Ответ программы: <code class="inline">[9 5 2]</code>.</p>
-        `,
-        renderEditor: () => `
-            <span style="color: #ff7b72;">package</span> main<br><br>
-            <span style="color: #ff7b72;">import</span> (<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #a5d6ff;">"fmt"</span><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #a5d6ff;">"sort"</span><br>
-            )<br><br>
-            <span style="color: #ff7b72;">func</span> <span style="color: #d2a8ff;">main</span>() {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;nums := []<span style="color: #79c0ff;">int</span>{<span style="color: #79c0ff;">5</span>, <span style="color: #79c0ff;">2</span>, <span style="color: #79c0ff;">9</span>}<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;sort.Slice(nums, <span style="color: #ff7b72;">func</span>(i, j <span style="color: #79c0ff;">int</span>) <span style="color: #79c0ff;">bool</span> {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ff7b72;">return</span> <textarea id="user-code" rows="2" placeholder='nums[i] > nums[j]' style="color: #79c0ff; font-weight: normal;"></textarea><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;})<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;fmt.Println(nums)<br>
-            }
-        `,
+            <p>В main: слайс []int{3, 1, 4, 1, 5}; отсортируй по убыванию и напечатай слайс целиком.</p>
+            <p><b>Ожидаемый вывод:</b> <code class="inline">[5 4 3 1 1]</code></p>`,
+        renderEditor: () => `\n            package main<br><br>import (<br>&nbsp;&nbsp;&nbsp;&nbsp;"fmt"<br>&nbsp;&nbsp;&nbsp;&nbsp;"sort"<br>)<br><br><textarea id="user-code" rows="9" placeholder='func main() {\n    nums := []int{3, 1, 4, 1, 5}\n    sort.Slice(nums, func(i, j int) bool {\n        return nums[i] &gt; nums[j]\n    })\n    fmt.Println(nums)\n}' style="color: #79c0ff; font-weight: normal;"></textarea>\n        `,
         placeholderColor: "#0d1117",
-        buildCode: (input) => `package main\n\nimport (\n\t"fmt"\n\t"sort"\n)\n\nfunc main() {\n\tnums := []int{5, 2, 9}\n\tsort.Slice(nums, func(i, j int) bool {\n\t\treturn ${input}\n\t})\n\tfmt.Println(nums)\n}`,
-        validate: (stdout) => stdout.trim() === "[9 5 2]"
+        buildCode: (input) => `package main
+
+import (
+	"fmt"
+	"sort"
+)
+
+${input}
+`,
+        validate: (stdout) => stdout.trim() === "[5 4 3 1 1]"
     },
     {
         id: 62,
         moduleId: 8,
         moduleTitle: "Раздел 8: Стандартная библиотека и данные",
-        title: "Урок 62: Время — time.Duration",
+        title: "Урок 62: Время замеры — time.Now / Since",
         theory: `
-            <h2>Урок 62: Длительности</h2>
-            <p>Тип <code class="inline">time.Duration</code> — это число наносекунд, но записывается оно человекочитаемо: <code class="inline">5 * time.Second</code>, <code class="inline">3 * time.Minute</code>, <code class="inline">250 * time.Millisecond</code>.</p>
-            <p>Длительности можно складывать, делить друг на друга и сравнивать. Деление <code class="inline">timeout / time.Second</code> даёт «сколько секунд прошло», но результат всё ещё имеет тип Duration — для чистого числа его приводят через <code class="inline">int(...)</code>.</p>
-            <p>Таймауты, retry-паузы, расчёт возраста — всё это Duration. Ошибка новичка — писать <code class="inline">time.Sleep(3)</code>: это sleep на 3 наносекунды, то есть почти мгновенно.</p>
+            <h2>Урок 62: time.Duration</h2>
+            <p><code class="inline">start := time.Now()</code> ... работа ... <code class="inline">time.Since(start)</code> — сколько длилось. Duration можно присвоить переменной и «проглотить» через <code class="inline">_ =</code>, чтобы импорт time был задействован.</p>
             <hr style="border-color: var(--border-color); margin: 20px 0;">
             <h3>Задание:</h3>
-            <p>Константа <code class="inline">timeout</code> не задана. Запиши длительность <code class="inline">3 * time.Minute</code> — программа переведёт её в секунды и напечатает <code class="inline">180</code>.</p>
-        `,
-        renderEditor: () => `
-            <span style="color: #ff7b72;">package</span> main<br><br>
-            <span style="color: #ff7b72;">import</span> (<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #a5d6ff;">"fmt"</span><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #a5d6ff;">"time"</span><br>
-            )<br><br>
-            <span style="color: #ff7b72;">func</span> <span style="color: #d2a8ff;">main</span>() {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ff7b72;">const</span> timeout = <textarea id="user-code" rows="2" placeholder='3 * time.Minute' style="color: #79c0ff; font-weight: normal;"></textarea><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;fmt.Println(int(timeout / time.Second))<br>
-            }
-        `,
+            <p>В main: запомни start, в цикле просуммируй <code class="inline">sum += i</code> для i от 0 до 99999, сделай <code class="inline">elapsed := time.Since(start)</code> и <code class="inline">_ = elapsed</code>. Напечатай sum.</p>
+            <p><b>Ожидаемый вывод:</b> <code class="inline">4999950000</code></p>`,
+        renderEditor: () => `\n            package main<br><br>import (<br>&nbsp;&nbsp;&nbsp;&nbsp;"fmt"<br>&nbsp;&nbsp;&nbsp;&nbsp;"time"<br>)<br><br><textarea id="user-code" rows="12" placeholder='func main() {\n    start := time.Now()\n    sum := 0\n    for i := 0; i &lt; 100000; i++ {\n        sum += i\n    }\n    elapsed := time.Since(start)\n    _ = elapsed\n    fmt.Println(sum)\n}' style="color: #79c0ff; font-weight: normal;"></textarea>\n        `,
         placeholderColor: "#0d1117",
-        buildCode: (input) => `package main\n\nimport (\n\t"fmt"\n\t"time"\n)\n\nfunc main() {\n\tconst timeout = ${input}\n\tfmt.Println(int(timeout / time.Second))\n}`,
-        validate: (stdout) => stdout.trim() === "180"
+        buildCode: (input) => `package main
+
+import (
+	"fmt"
+	"time"
+)
+
+${input}
+`,
+        validate: (stdout) => stdout.trim() === "4999950000"
     },
     {
         id: 63,
         moduleId: 8,
         moduleTitle: "Раздел 8: Стандартная библиотека и данные",
-        title: "Урок 63: Дженерики — код для многих типов",
+        title: "Урок 63: Первая дженерик-функция",
         theory: `
-            <h2>Урок 63: Дженерики</h2>
-            <p>До Go 1.18 для «универсальной» функции приходилось писать кучу копий под каждый тип или терять типы ради <code class="inline">any</code>. Теперь есть <b>дженерики</b>:</p>
-            <pre><code class="block">func first[T any](s []T) T {
-    return s[0]
-}</code></pre>
-            <p>Квадратные скобки <code class="inline">[T any]</code> — параметр типа: Go подставит конкретный тип при вызове. Ограничение <code class="inline">any</code> разрешает любой тип, а <code class="inline">[T cmp.Ordered]</code> — только сравниваемые числа/строки.</p>
-            <p>Тип выводится автоматически: <code class="inline">first([]string{"a"})</code> — и T уже string, указывать руками не нужно.</p>
+            <h2>Урок 63: [T any]</h2>
+            <p><code class="inline">func first[T any](s []T) T { return s[0] }</code> — работает с любым типом слайса, тип выводится из вызова. Никакого any-кастинга внутри!</p>
             <hr style="border-color: var(--border-color); margin: 20px 0;">
             <h3>Задание:</h3>
-            <p>Дженерик-функция <code class="inline">first</code> готова. Вызови её со слайсом <code class="inline">[]string{"Go", "course"}</code> внутри Println — программа напечатает <code class="inline">Go</code>.</p>
-        `,
-        renderEditor: () => `
-            <span style="color: #ff7b72;">package</span> main<br><br>
-            <span style="color: #ff7b72;">import</span> <span style="color: #a5d6ff;">"fmt"</span><br><br>
-            <span style="color: #ff7b72;">func</span> <span style="color: #d2a8ff;">first</span>[T <span style="color: #79c0ff;">any</span>](s []T) T {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ff7b72;">return</span> s[<span style="color: #79c0ff;">0</span>]<br>
-            }<br><br>
-            <span style="color: #ff7b72;">func</span> <span style="color: #d2a8ff;">main</span>() {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;fmt.Println(<textarea id="user-code" rows="2" placeholder='first([]string{"Go", "course"})' style="color: #79c0ff; font-weight: normal;"></textarea>)<br>
-            }
-        `,
+            <p>Напиши функцию first по примеру выше. В main: <code class="inline">fmt.Println(first([]string{"Go", "Rust"}))</code>.</p>
+            <p><b>Ожидаемый вывод:</b> <code class="inline">Go</code></p>`,
+        renderEditor: () => `\n            package main<br><br>import "fmt"<br><br><textarea id="user-code" rows="9" placeholder='func first[T any](s []T) T {\n    return s[0]\n}\n\nfunc main() {\n    fmt.Println(first([]string{&quot;Go&quot;, &quot;Rust&quot;}))\n}' style="color: #79c0ff; font-weight: normal;"></textarea>\n        `,
         placeholderColor: "#0d1117",
-        buildCode: (input) => `package main\n\nimport "fmt"\n\nfunc first[T any](s []T) T {\n\treturn s[0]\n}\n\nfunc main() {\n\tfmt.Println(${input})\n}`,
+        buildCode: (input) => `package main
+
+import "fmt"
+
+${input}
+`,
         validate: (stdout) => stdout.trim() === "Go"
     }
 ];

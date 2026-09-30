@@ -4,226 +4,170 @@ export const module6Lessons = [
         id: 41,
         moduleId: 6,
         moduleTitle: "Раздел 6: Указатели и обработка ошибок",
-        title: "Урок 41: Что такое указатель — & и *",
+        title: "Урок 41: Указатели — & и *",
         theory: `
-            <h2>Урок 41: Что такое указатель</h2>
-            <p>Каждая переменная занимает место в памяти компьютера. <b>Указатель</b> — это специальная переменная, которая хранит не значение, а <b>адрес</b>, по которому это значение лежит.</p>
-            <p>В Go указатель создаётся оператором <code class="inline">&amp;</code> (взять адрес), а значение по адресу читается оператором <code class="inline">*</code> (разыменование).</p>
-            <p>Тип <code class="inline">*int</code> читается как «указатель на int». Разыменование <code class="inline">*p</code> возвращает лежащий по адресу int.</p>
+            <h2>Урок 41: Указатели</h2>
+            <p>Указатель хранит адрес переменной в памяти. <code class="inline">&amp;x</code> берёт адрес x, тип указателя — <code class="inline">*int</code>. Запись <code class="inline">*p = 25</code> меняет значение по адресу, то есть сам x.</p>
             <hr style="border-color: var(--border-color); margin: 20px 0;">
             <h3>Задание:</h3>
-            <p>Создана переменная <code class="inline">x := 10</code> и указатель на неё <code class="inline">p := &amp;x</code>. Выведи на экран значение, на которое указывает <code class="inline">p</code>, с помощью <code class="inline">*p</code>.</p>
-        `,
-        renderEditor: () => `
-            <span style="color: #ff7b72;">package</span> main<br><br>
-            <span style="color: #ff7b72;">import</span> <span style="color: #a5d6ff;">"fmt"</span><br><br>
-            <span style="color: #ff7b72;">func</span> <span style="color: #d2a8ff;">main</span>() {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;x := <span style="color: #79c0ff;">10</span><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;p := &amp;x<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<textarea id="user-code" rows="2" placeholder='fmt.Println(*p)' style="color: #79c0ff; font-weight: normal;"></textarea><br>
-            }
-        `,
+            <p>В <code class="inline">main</code>: создай <code class="inline">x := 10</code>, возьми указатель <code class="inline">p := &amp;x</code>, присвой <code class="inline">*p = 25</code> и напечатай <b>через Println именно x</b>.</p>
+            <p><b>Ожидаемый вывод:</b> <code class="inline">25 — изменился оригинал, а не копия</code></p>`,
+        renderEditor: () => `\n            package main<br><br>import "fmt"<br><br><textarea id="user-code" rows="8" placeholder='func main() {\n    x := 10\n    p := &amp;x\n    *p = 25\n    fmt.Println(x)\n}' style="color: #79c0ff; font-weight: normal;"></textarea>\n        `,
         placeholderColor: "#0d1117",
-        buildCode: (input) => `package main\n\nimport "fmt"\n\nfunc main() {\n\tx := 10\n\tp := &x\n\t${input}\n}`,
-        validate: (stdout) => stdout.trim() === "10"
+        buildCode: (input) => `package main
+
+import "fmt"
+
+${input}
+`,
+        validate: (stdout) => stdout.trim() === "25"
     },
     {
         id: 42,
         moduleId: 6,
         moduleTitle: "Раздел 6: Указатели и обработка ошибок",
-        title: "Урок 42: Мутация через указатель — передача по ссылке",
+        title: "Урок 42: Функция, меняющая данные по указателю",
         theory: `
-            <h2>Урок 42: Изменяем данные через указатель</h2>
-            <p>Go всегда передаёт аргументы в функцию <b>по значению</b> — копирует их. Если передать в функцию обычный <code class="inline">int</code>, внутри создастся копия, и оригинал не изменится.</p>
-            <p>Но если передать <b>указатель</b> <code class="inline">*int</code>, функция получит адрес оригинальной переменной и сможет изменить её через разыменование: <code class="inline">*p = 0</code>.</p>
-            <p>Именно так работают pointer-реципиенты у методов struct, которые ты уже проходил в разделе 4.</p>
+            <h2>Урок 42: Pointer-аргумент</h2>
+            <p>Go копирует аргументы. Чтобы функция изменила оригинал — передавай адрес. Тело <code class="inline">*p = *p * *p</code> возводит лежащее по адресу число в квадрат.</p>
             <hr style="border-color: var(--border-color); margin: 20px 0;">
             <h3>Задание:</h3>
-            <p>Функция <code class="inline">setZero</code> принимает указатель и обнуляет значение по этому адресу. В <code class="inline">main</code> уже вызван <code class="inline">setZero(&amp;num)</code>. Выведи <code class="inline">num</code> на экран — должно печататься <code class="inline">0</code>!</p>
-        `,
-        renderEditor: () => `
-            <span style="color: #ff7b72;">package</span> main<br><br>
-            <span style="color: #ff7b72;">import</span> <span style="color: #a5d6ff;">"fmt"</span><br><br>
-            <span style="color: #ff7b72;">func</span> <span style="color: #d2a8ff;">setZero</span>(p *<span style="color: #79c0ff;">int</span>) {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;*p = <span style="color: #79c0ff;">0</span><br>
-            }<br><br>
-            <span style="color: #ff7b72;">func</span> <span style="color: #d2a8ff;">main</span>() {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;num := <span style="color: #79c0ff;">5</span><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;setZero(&amp;num)<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<textarea id="user-code" rows="2" placeholder='fmt.Println(num)' style="color: #79c0ff; font-weight: normal;"></textarea><br>
-            }
-        `,
+            <p>Напиши функцию <code class="inline">func square(p *int)</code> с телом <code class="inline">*p = *p * *p</code>. В main: <code class="inline">n := 7</code>, вызов <code class="inline">square(&amp;n)</code>, печать n через Println.</p>
+            <p><b>Ожидаемый вывод:</b> <code class="inline">49</code></p>`,
+        renderEditor: () => `\n            package main<br><br>import "fmt"<br><br><textarea id="user-code" rows="11" placeholder='func square(p *int) {\n    *p = *p * *p\n}\n\nfunc main() {\n    n := 7\n    square(&amp;n)\n    fmt.Println(n)\n}' style="color: #79c0ff; font-weight: normal;"></textarea>\n        `,
         placeholderColor: "#0d1117",
-        buildCode: (input) => `package main\n\nimport "fmt"\n\nfunc setZero(p *int) {\n\t*p = 0\n}\n\nfunc main() {\n\tnum := 5\n\tsetZero(&num)\n\t${input}\n}`,
-        validate: (stdout) => stdout.trim() === "0"
+        buildCode: (input) => `package main
+
+import "fmt"
+
+${input}
+`,
+        validate: (stdout) => stdout.trim() === "49"
     },
     {
         id: 43,
         moduleId: 6,
         moduleTitle: "Раздел 6: Указатели и обработка ошибок",
-        title: "Урок 43: nil — указатель в никуда",
+        title: "Урок 43: nil-указатель и проверка",
         theory: `
-            <h2>Урок 43: nil-указатель</h2>
-            <p>Если указатель объявлен, но ни на что не указывает, его значение — <code class="inline">nil</code>. Разыменование такого указателя (<code class="inline">*p</code>) уронит программу с паникой.</p>
-            <p>Поэтому перед использованием указателя в Go принято проверять: <code class="inline">if p == nil { ... }</code>. Это обязательная гигиена безопасного кода.</p>
+            <h2>Урок 43: nil</h2>
+            <p>Объявленный, но ни на что не направленный указатель равен <code class="inline">nil</code>. Разыменование такого указателя — паника, поэтому сначала проверяют <code class="inline">if p == nil</code>.</p>
             <hr style="border-color: var(--border-color); margin: 20px 0;">
             <h3>Задание:</h3>
-            <p>Указатель <code class="inline">p</code> объявлен, но ни на что не указывает. Допиши условие так, чтобы программа напечатала <code class="inline">Пусто</code>.</p>
-        `,
-        renderEditor: () => `
-            <span style="color: #ff7b72;">package</span> main<br><br>
-            <span style="color: #ff7b72;">import</span> <span style="color: #a5d6ff;">"fmt"</span><br><br>
-            <span style="color: #ff7b72;">func</span> <span style="color: #d2a8ff;">main</span>() {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ff7b72;">var</span> p *<span style="color: #79c0ff;">int</span><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ff7b72;">if</span> <textarea id="user-code" rows="2" placeholder='p == nil' style="color: #79c0ff; font-weight: normal;"></textarea> {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fmt.Println(<span style="color: #a5d6ff;">"Пусто"</span>)<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;}<br>
-            }
-        `,
+            <p>В main: обяви <code class="inline">var ptr *int</code>. Если ptr равен nil — напечатай «nil», иначе напечатай <code class="inline">*ptr</code> (эта ветка не сработает).</p>
+            <p><b>Ожидаемый вывод:</b> <code class="inline">nil</code></p>`,
+        renderEditor: () => `\n            package main<br><br>import "fmt"<br><br><textarea id="user-code" rows="10" placeholder='func main() {\n    var ptr *int\n    if ptr == nil {\n        fmt.Println(&quot;nil&quot;)\n    } else {\n        fmt.Println(*ptr)\n    }\n}' style="color: #79c0ff; font-weight: normal;"></textarea>\n        `,
         placeholderColor: "#0d1117",
-        buildCode: (input) => `package main\n\nimport "fmt"\n\nfunc main() {\n\tvar p *int\n\tif ${input} {\n\t\tfmt.Println("Пусто")\n\t}\n}`,
-        validate: (stdout) => stdout.trim() === "Пусто"
+        buildCode: (input) => `package main
+
+import "fmt"
+
+${input}
+`,
+        validate: (stdout) => stdout.trim() === "nil"
     },
     {
         id: 44,
         moduleId: 6,
         moduleTitle: "Раздел 6: Указатели и обработка ошибок",
-        title: "Урок 44: error как значение — возвращаем и проверяем",
+        title: "Урок 44: Возврат error и if err != nil",
         theory: `
-            <h2>Урок 44: Ошибка — это обычное значение</h2>
-            <p>В Go нет исключений в привычном виде. Функция, которая может упасть, возвращает специальным типом <code class="inline">error</code> последний результат: <code class="inline">(float64, error)</code>.</p>
-            <p>Соглашение простое: если <code class="inline">err == nil</code> — всё хорошо и можно работать с результатом. Если <code class="inline">err != nil</code> — результат недействителен, ошибку надо обработать.</p>
-            <p>Игнорировать ошибку через <code class="inline">_</code> можно только в учебных задачах — на бэкенде это прямой путь к багам.</p>
+            <h2>Урок 44: error — второй результат</h2>
+            <p>В скелете дана <code class="inline">divide(a, b int) (int, error)</code>: при b==0 она возвращает ошибку <code class="inline">div by zero</code>, иначе частное и nil.</p>
             <hr style="border-color: var(--border-color); margin: 20px 0;">
             <h3>Задание:</h3>
-            <p>Функция <code class="inline">divide(10, 2)</code> отработала без ошибки. Выведи переменную <code class="inline">result</code> на экран — должно получиться <code class="inline">5</code>.</p>
-        `,
-        renderEditor: () => `
-            <span style="color: #ff7b72;">package</span> main<br><br>
-            <span style="color: #ff7b72;">import</span> (<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #a5d6ff;">"errors"</span><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #a5d6ff;">"fmt"</span><br>
-            )<br><br>
-            <span style="color: #ff7b72;">func</span> <span style="color: #d2a8ff;">divide</span>(a, b <span style="color: #79c0ff;">float64</span>) (<span style="color: #79c0ff;">float64</span>, <span style="color: #79c0ff;">error</span>) {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ff7b72;">if</span> b == <span style="color: #79c0ff;">0</span> {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ff7b72;">return</span> <span style="color: #79c0ff;">0</span>, errors.New(<span style="color: #a5d6ff;">"division by zero"</span>)<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;}<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ff7b72;">return</span> a / b, <span style="color: #79c0ff;">nil</span><br>
-            }<br><br>
-            <span style="color: #ff7b72;">func</span> <span style="color: #d2a8ff;">main</span>() {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;result, err := divide(<span style="color: #79c0ff;">10</span>, <span style="color: #79c0ff;">2</span>)<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ff7b72;">if</span> err != <span style="color: #79c0ff;">nil</span> {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fmt.Println(<span style="color: #a5d6ff;">"Error:"</span>, err)<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;}<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<textarea id="user-code" rows="2" placeholder='fmt.Println(result)' style="color: #79c0ff; font-weight: normal;"></textarea><br>
-            }
-        `,
+            <p>В main вызови <code class="inline">res, err := divide(10, 0)</code>. Если err не nil — напечатай «Error: » и err (через Println с двумя аргументами) и сделай <code class="inline">return</code>. Иначе напечатай res.</p>
+            <p><b>Ожидаемый вывод:</b> <code class="inline">Error: div by zero</code></p>`,
+        renderEditor: () => `\n            package main<br><br>import (<br>&nbsp;&nbsp;&nbsp;&nbsp;"errors"<br>&nbsp;&nbsp;&nbsp;&nbsp;"fmt"<br>)<br><br>func divide(a, b int) (int, error) {<br>&nbsp;&nbsp;&nbsp;&nbsp;if b == 0 {<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return 0, errors.New("div by zero")<br>&nbsp;&nbsp;&nbsp;&nbsp;}<br>&nbsp;&nbsp;&nbsp;&nbsp;return a / b, nil<br>}<br><br><textarea id="user-code" rows="10" placeholder='func main() {\n    res, err := divide(10, 0)\n    if err != nil {\n        fmt.Println(&quot;Error:&quot;, err)\n        return\n    }\n    fmt.Println(res)\n}' style="color: #79c0ff; font-weight: normal;"></textarea>\n        `,
         placeholderColor: "#0d1117",
-        buildCode: (input) => `package main\n\nimport (\n\t"errors"\n\t"fmt"\n)\n\nfunc divide(a, b float64) (float64, error) {\n\tif b == 0 {\n\t\treturn 0, errors.New("division by zero")\n\t}\n\treturn a / b, nil\n}\n\nfunc main() {\n\tresult, err := divide(10, 2)\n\tif err != nil {\n\t\tfmt.Println("Error:", err)\n\t}\n\t${input}\n}`,
-        validate: (stdout) => stdout.trim() === "5"
+        buildCode: (input) => `package main
+
+import (
+	"errors"
+	"fmt"
+)
+
+func divide(a, b int) (int, error) {
+	if b == 0 {
+		return 0, errors.New("div by zero")
+	}
+	return a / b, nil
+}
+
+${input}
+`,
+        validate: (stdout) => stdout.trim() === "Error: div by zero"
     },
     {
         id: 45,
         moduleId: 6,
         moduleTitle: "Раздел 6: Указатели и обработка ошибок",
-        title: "Урок 45: Создаём ошибки — errors.New и fmt.Errorf",
+        title: "Урок 45: Своя функция с errors.New",
         theory: `
-            <h2>Урок 45: Как создать свою ошибку</h2>
-            <p>Чтобы вернуться из функции ошибкой, её сначала надо создать. Самый простой способ — <code class="inline">errors.New("текст")</code>, который возвращает значение типа <code class="inline">error</code>.</p>
-            <p>Если в текст ошибки нужно подставить динамические данные, используют <code class="inline">fmt.Errorf("user %d not found", id)</code> — форматирование работает как в Print.</p>
-            <p>Текст ошибки — это сообщение для логов: пиши его кратко, строчными буквами и без точки в конце (так принято в Go).</p>
+            <h2>Урок 45: Создаём ошибку</h2>
+            <p><code class="inline">errors.New("текст")</code> создаёт значение типа error. Соглашение Go: текст ошибки строчными буквами, без точки в конце.</p>
             <hr style="border-color: var(--border-color); margin: 20px 0;">
             <h3>Задание:</h3>
-            <p>Функция <code class="inline">findUser</code> не нашла пользователя с id 7. Верни ей новую ошибку с текстом <code class="inline">user not found</code> через <code class="inline">errors.New</code>.</p>
-        `,
-        renderEditor: () => `
-            <span style="color: #ff7b72;">package</span> main<br><br>
-            <span style="color: #ff7b72;">import</span> (<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #a5d6ff;">"errors"</span><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #a5d6ff;">"fmt"</span><br>
-            )<br><br>
-            <span style="color: #ff7b72;">func</span> <span style="color: #d2a8ff;">findUser</span>(id <span style="color: #79c0ff;">int</span>) (<span style="color: #79c0ff;">string</span>, <span style="color: #79c0ff;">error</span>) {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ff7b72;">if</span> id == <span style="color: #79c0ff;">1</span> {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ff7b72;">return</span> <span style="color: #a5d6ff;">"Ann"</span>, <span style="color: #79c0ff;">nil</span><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;}<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ff7b72;">return</span> <span style="color: #a5d6ff;">""</span>, <textarea id="user-code" rows="2" placeholder='errors.New("user not found")' style="color: #79c0ff; font-weight: normal;"></textarea><br>
-            }<br><br>
-            <span style="color: #ff7b72;">func</span> <span style="color: #d2a8ff;">main</span>() {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;_, err := findUser(<span style="color: #79c0ff;">7</span>)<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;fmt.Println(err)<br>
-            }
-        `,
+            <p>Напиши <code class="inline">func findUser(id int) (string, error)</code>: для id==1 верни «Ann» и nil, иначе верни <code class="inline">"", errors.New("user not found")</code>. В main: <code class="inline">_, err := findUser(9)</code> и печать err.</p>
+            <p><b>Ожидаемый вывод:</b> <code class="inline">user not found</code></p>`,
+        renderEditor: () => `\n            package main<br><br>import (<br>&nbsp;&nbsp;&nbsp;&nbsp;"errors"<br>&nbsp;&nbsp;&nbsp;&nbsp;"fmt"<br>)<br><br><textarea id="user-code" rows="13" placeholder='func findUser(id int) (string, error) {\n    if id == 1 {\n        return &quot;Ann&quot;, nil\n    }\n    return &quot;&quot;, errors.New(&quot;user not found&quot;)\n}\n\nfunc main() {\n    _, err := findUser(9)\n    fmt.Println(err)\n}' style="color: #79c0ff; font-weight: normal;"></textarea>\n        `,
         placeholderColor: "#0d1117",
-        buildCode: (input) => `package main\n\nimport (\n\t"errors"\n\t"fmt"\n)\n\nfunc findUser(id int) (string, error) {\n\tif id == 1 {\n\t\treturn "Ann", nil\n\t}\n\treturn "", ${input}\n}\n\nfunc main() {\n\t_, err := findUser(7)\n\tfmt.Println(err)\n}`,
+        buildCode: (input) => `package main
+
+import (
+	"errors"
+	"fmt"
+)
+
+${input}
+`,
         validate: (stdout) => stdout.trim() === "user not found"
     },
     {
         id: 46,
         moduleId: 6,
         moduleTitle: "Раздел 6: Указатели и обработка ошибок",
-        title: "Урок 46: Обёртка ошибок — %w и errors.Is",
+        title: "Урок 46: Обёртка %w и errors.Is",
         theory: `
-            <h2>Урок 46: Цепочки ошибок через %w</h2>
-            <p>Когда один слой программы вызывает другой, ошибку снизу нужно не просто пробросить наверх, а <b>обогатить контекстом</b>: <code class="inline">fmt.Errorf("db: %w", err)</code>.</p>
-            <p>Глагол <code class="inline">%w</code> оборачивает исходную ошибку в новую, сохраняя цепочку. Так в логах видно <i>где именно</i> случилась проблема: «db: not found».</p>
-            <p>Но из-за обёртки сравнение <code class="inline">err == ErrNotFound</code> перестаёт работать! Для проверки внутри цепочки используют функцию <code class="inline">errors.Is(err, ErrNotFound)</code>.</p>
+            <h2>Урок 46: Цепочки ошибок</h2>
+            <p><code class="inline">fmt.Errorf("db: %w", ErrNotFound)</code> добавляет контекст, сохраняя исходную ошибку внутри. Достать её из цепочки можно только через <code class="inline">errors.Is(err, ErrNotFound)</code> — обычное == не сработает.</p>
             <hr style="border-color: var(--border-color); margin: 20px 0;">
             <h3>Задание:</h3>
-            <p>Функция <code class="inline">getUser</code> вернула обёрнутую ошибку. Допиши условие так, чтобы сработала проверка «является ли err ошибкой ErrNotFound в цепочке», и напечаталось <code class="inline">Handled: not found</code>.</p>
-        `,
-        renderEditor: () => `
-            <span style="color: #ff7b72;">package</span> main<br><br>
-            <span style="color: #ff7b72;">import</span> (<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #a5d6ff;">"errors"</span><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #a5d6ff;">"fmt"</span><br>
-            )<br><br>
-            <span style="color: #ff7b72;">var</span> ErrNotFound = errors.New(<span style="color: #a5d6ff;">"not found"</span>)<br><br>
-            <span style="color: #ff7b72;">func</span> <span style="color: #d2a8ff;">getUser</span>() <span style="color: #79c0ff;">error</span> {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ff7b72;">return</span> fmt.Errorf(<span style="color: #a5d6ff;">"db: %w"</span>, ErrNotFound)<br>
-            }<br><br>
-            <span style="color: #ff7b72;">func</span> <span style="color: #d2a8ff;">main</span>() {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;err := getUser()<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ff7b72;">if</span> <textarea id="user-code" rows="2" placeholder='errors.Is(err, ErrNotFound)' style="color: #79c0ff; font-weight: normal;"></textarea> {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fmt.Println(<span style="color: #a5d6ff;">"Handled: not found"</span>)<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;}<br>
-            }
-        `,
+            <p>На верхнем уровне обяви <code class="inline">var ErrNotFound = errors.New("not found")</code>. Функция <code class="inline">getUser() error</code> пусть вернёт обёртку через %w. В main: если errors.Is — печать «handled».</p>
+            <p><b>Ожидаемый вывод:</b> <code class="inline">handled</code></p>`,
+        renderEditor: () => `\n            package main<br><br>import (<br>&nbsp;&nbsp;&nbsp;&nbsp;"errors"<br>&nbsp;&nbsp;&nbsp;&nbsp;"fmt"<br>)<br><br><textarea id="user-code" rows="14" placeholder='var ErrNotFound = errors.New(&quot;not found&quot;)\n\nfunc getUser() error {\n    return fmt.Errorf(&quot;db: %w&quot;, ErrNotFound)\n}\n\nfunc main() {\n    err := getUser()\n    if errors.Is(err, ErrNotFound) {\n        fmt.Println(&quot;handled&quot;)\n    }\n}' style="color: #79c0ff; font-weight: normal;"></textarea>\n        `,
         placeholderColor: "#0d1117",
-        buildCode: (input) => `package main\n\nimport (\n\t"errors"\n\t"fmt"\n)\n\nvar ErrNotFound = errors.New("not found")\n\nfunc getUser() error {\n\treturn fmt.Errorf("db: %w", ErrNotFound)\n}\n\nfunc main() {\n\terr := getUser()\n\tif ${input} {\n\t\tfmt.Println("Handled: not found")\n\t}\n}`,
-        validate: (stdout) => stdout.trim() === "Handled: not found"
+        buildCode: (input) => `package main
+
+import (
+	"errors"
+	"fmt"
+)
+
+${input}
+`,
+        validate: (stdout) => stdout.trim() === "handled"
     },
     {
         id: 47,
         moduleId: 6,
         moduleTitle: "Раздел 6: Указатели и обработка ошибок",
-        title: "Урок 47: panic и recover — последняя линия обороны",
+        title: "Урок 47: panic / recover",
         theory: `
-            <h2>Урок 47: panic / recover</h2>
-            <p><code class="inline">panic</code> — это аварийная остановка: деление на ноль, nil-разыменование, выход за границы массива. Программа падает и печатает stack trace.</p>
-            <p>Поймать панику можно только внутри <code class="inline">defer</code>-функции с помощью <code class="inline">recover()</code>. Если паники не было — <code class="inline">recover()</code> вернёт <code class="inline">nil</code>, если была — её причину.</p>
-            <p>В обычном коде паникуй реже и проверяй <code class="inline">error</code>! Но на бэкенде recover спасает HTTP-сервер: упавший обработчик не должен ронять всё приложение.</p>
+            <h2>Урок 47: Ловим панику</h2>
+            <p>Деление на ноль — паника. Спасает <code class="inline">defer func() { if r := recover(); r != nil { ... } }()</code>. С именованным результатом <code class="inline">(res int)</code> внутри recover можно подменить возвращаемое число.</p>
             <hr style="border-color: var(--border-color); margin: 20px 0;">
             <h3>Задание:</h3>
-            <p>Функция <code class="inline">safeDiv(10, 0)</code> вызывает панику при делении на ноль. Допиши проверку в defer так, чтобы при панике функция возвращала <code class="inline">-1</code>.</p>
-        `,
-        renderEditor: () => `
-            <span style="color: #ff7b72;">package</span> main<br><br>
-            <span style="color: #ff7b72;">import</span> <span style="color: #a5d6ff;">"fmt"</span><br><br>
-            <span style="color: #ff7b72;">func</span> <span style="color: #d2a8ff;">safeDiv</span>(a, b <span style="color: #79c0ff;">int</span>) (result <span style="color: #79c0ff;">int</span>) {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ff7b72;">defer</span> <span style="color: #ff7b72;">func</span>() {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ff7b72;">if</span> <textarea id="user-code" rows="2" placeholder='recover()' style="color: #79c0ff; font-weight: normal;"></textarea> != <span style="color: #79c0ff;">nil</span> {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;result = -<span style="color: #79c0ff;">1</span><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;}()<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;result = a / b<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ff7b72;">return</span><br>
-            }<br><br>
-            <span style="color: #ff7b72;">func</span> <span style="color: #d2a8ff;">main</span>() {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;fmt.Println(safeDiv(<span style="color: #79c0ff;">10</span>, <span style="color: #79c0ff;">0</span>))<br>
-            }
-        `,
+            <p>Напиши <code class="inline">func safeDiv(a, b int) (res int)</code>: defer с recover присваивает res = -1; затем <code class="inline">res = a / b</code> и просто <code class="inline">return</code>. В main напечатай safeDiv(10, 0).</p>
+            <p><b>Ожидаемый вывод:</b> <code class="inline">-1 (паника перехвачена, программа жива)</code></p>`,
+        renderEditor: () => `\n            package main<br><br>import "fmt"<br><br><textarea id="user-code" rows="14" placeholder='func safeDiv(a, b int) (res int) {\n    defer func() {\n        if r := recover(); r != nil {\n            res = -1\n        }\n    }()\n    res = a / b\n    return\n}\n\nfunc main() {\n    fmt.Println(safeDiv(10, 0))\n}' style="color: #79c0ff; font-weight: normal;"></textarea>\n        `,
         placeholderColor: "#0d1117",
-        buildCode: (input) => `package main\n\nimport "fmt"\n\nfunc safeDiv(a, b int) (result int) {\n\tdefer func() {\n\t\tif ${input} != nil {\n\t\t\tresult = -1\n\t\t}\n\t}()\n\tresult = a / b\n\treturn\n}\n\nfunc main() {\n\tfmt.Println(safeDiv(10, 0))\n}`,
+        buildCode: (input) => `package main
+
+import "fmt"
+
+${input}
+`,
         validate: (stdout) => stdout.trim() === "-1"
     }
 ];

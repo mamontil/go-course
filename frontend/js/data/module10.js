@@ -4,42 +4,25 @@ export const module10Lessons = [
         id: 71,
         moduleId: 10,
         moduleTitle: "Раздел 10: Паттерны конкурентности",
-        title: "Урок 71: Worker Pool — рой рабочих горутин",
+        title: "Урок 71: Worker Pool",
         theory: `
-            <h2>Урок 71: Worker Pool</h2>
-            <p>Главный паттерн высоконагруженных сервисов: вместо тысячи горутин на каждую задачу держим <b>пул фиксированных рабочих</b>. Все они читают задания из одного канала <code class="inline">jobs</code> — Go сам распределит работу между ними.</p>
-            <p>Схема: продюсер пишет задачи в <code class="inline">jobs</code> и закрывает канал, N воркеров крутят <code class="inline">for j := range jobs</code> и пишут результаты в <code class="inline">results</code>.</p>
-            <p>Плюсы: контролируемая нагрузка на CPU/БД, никакой лавины горутин. Именно так устроен пул соединений в базе и воркеры в CI.</p>
+            <h2>Урок 71: Пул рабочих</h2>
+            <p>N горутин-воркеров читают один канал заданий (<code class="inline">for j := range jobs</code>) — Go сам раздаёт работу. Порядок: создали каналы → запустили воркеров (WaitGroup) →fill jobs → close(jobs) → wg.Wait() → close(res) → собираем.</p>
             <hr style="border-color: var(--border-color); margin: 20px 0;">
             <h3>Задание:</h3>
-            <p>Два воркера возводят числа 1–4 в квадрат. main уже просуммировал результаты в <code class="inline">total</code> (1+4+9+16). Выведи сумму — ответ <code class="inline">30</code>.</p>
-        `,
-        renderEditor: () => `
-            <span style="color: #ff7b72;">package</span> main<br><br>
-            <span style="color: #ff7b72;">import</span> <span style="color: #a5d6ff;">"fmt"</span><br><br>
-            <span style="color: #ff7b72;">func</span> <span style="color: #d2a8ff;">main</span>() {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;jobs := <span style="color: #ff7b72;">make</span>(<span style="color: #ff7b72;">chan</span> <span style="color: #79c0ff;">int</span>, <span style="color: #79c0ff;">4</span>)<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;results := <span style="color: #ff7b72;">make</span>(<span style="color: #ff7b72;">chan</span> <span style="color: #79c0ff;">int</span>, <span style="color: #79c0ff;">4</span>)<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ff7b72;">for</span> w := <span style="color: #79c0ff;">1</span>; w &lt;= <span style="color: #79c0ff;">2</span>; w++ {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ff7b72;">go</span> <span style="color: #ff7b72;">func</span>() {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ff7b72;">for</span> j := <span style="color: #ff7b72;">range</span> jobs {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;results &lt;- j * j<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}()<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;}<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ff7b72;">for</span> i := <span style="color: #79c0ff;">1</span>; i &lt;= <span style="color: #79c0ff;">4</span>; i++ {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;jobs &lt;- i<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;}<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;close(jobs)<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;total := <span style="color: #79c0ff;">0</span><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ff7b72;">for</span> i := <span style="color: #79c0ff;">0</span>; i &lt; <span style="color: #79c0ff;">4</span>; i++ {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;total += &lt;-results<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;}<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<textarea id="user-code" rows="2" placeholder='fmt.Println(total)' style="color: #79c0ff; font-weight: normal;"></textarea><br>
-            }
-        `,
+            <p>2 воркера возводят задания в квадрат и пишут в res. main заполняет jobs числами 1..4, ждёт завершения (wg.Wait), закрывает res, суммирует range-ом и печатает сумму.</p>
+            <p><b>Ожидаемый вывод:</b> <code class="inline">30 = 1+4+9+16</code></p>`,
+        renderEditor: () => `\n            package main<br><br>import (<br>&nbsp;&nbsp;&nbsp;&nbsp;"fmt"<br>&nbsp;&nbsp;&nbsp;&nbsp;"sync"<br>)<br><br><textarea id="user-code" rows="14" placeholder='func main() {\n    jobs := make(chan int, 4)\n    res := make(chan int, 4)\n    var wg sync.WaitGroup\n    for w := 0; w &lt; 2; w++ {\n        wg.Add(1)\n        go func() {\n            defer wg.Done()\n            for j := range jobs {\n                res &lt;- j * j\n            }\n        }()\n    }\n    for i := 1; i &lt;= 4; i++ {\n        jobs &lt;- i\n    }\n    close(jobs)\n    wg.Wait()\n    close(res)\n    total := 0\n    for v := range res {\n        total += v\n    }\n    fmt.Println(total)\n}' style="color: #79c0ff; font-weight: normal;"></textarea>\n        `,
         placeholderColor: "#0d1117",
-        buildCode: (input) => `package main\n\nimport "fmt"\n\nfunc main() {\n\tjobs := make(chan int, 4)\n\tresults := make(chan int, 4)\n\tfor w := 1; w <= 2; w++ {\n\t\tgo func() {\n\t\t\tfor j := range jobs {\n\t\t\t\tresults <- j * j\n\t\t\t}\n\t\t}()\n\t}\n\tfor i := 1; i <= 4; i++ {\n\t\tjobs <- i\n\t}\n\tclose(jobs)\n\ttotal := 0\n\tfor i := 0; i < 4; i++ {\n\t\ttotal += <-results\n\t}\n\t${input}\n}`,
+        buildCode: (input) => `package main
+
+import (
+	"fmt"
+	"sync"
+)
+
+${input}
+`,
         validate: (stdout) => stdout.trim() === "30"
     },
     {
@@ -48,293 +31,167 @@ export const module10Lessons = [
         moduleTitle: "Раздел 10: Паттерны конкурентности",
         title: "Урок 72: Pipeline — конвейер стадий",
         theory: `
-            <h2>Урок 72: Pipeline</h2>
-            <p>Конвейер — цепочка горутин-стадий, соединённых каналами: выход одной стадии — вход следующей. Каждая стадия получает данные, преобразует и передаёт дальше.</p>
-            <p>Классический пример: <i>чтение строк → парсинг → агрегация</i>. В Go это буквально три канала и три горутинных функции, каждая со своим <code class="inline">for range</code> и <code class="inline">close()</code> на выходе.</p>
-            <p>Бонус паттерна: стадии работают параллельно. Пока вторая обрабатывает элемент N, первая уже готова принять N+1.</p>
+            <h2>Урок 72: Конвейер</h2>
+            <p>Стадия — функция, принимающая канал, возвращающая канал и крутящая горутину с range + close. Цепочка <code class="inline">square(gen(1, 2, 3))</code> — классический pipeline.</p>
             <hr style="border-color: var(--border-color); margin: 20px 0;">
             <h3>Задание:</h3>
-            <p>Первая стадия прибавляет единицу (получилось 2,3,4). Вторая должна удваивать — допиши значение, которое улетает в канал <code class="inline">doubled</code>. Ожидаемый вывод: <code class="inline">4 6 8</code>.</p>
-        `,
-        renderEditor: () => `
-            <span style="color: #ff7b72;">package</span> main<br><br>
-            <span style="color: #ff7b72;">import</span> <span style="color: #a5d6ff;">"fmt"</span><br><br>
-            <span style="color: #ff7b72;">func</span> <span style="color: #d2a8ff;">main</span>() {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;nums := []<span style="color: #79c0ff;">int</span>{<span style="color: #79c0ff;">1</span>, <span style="color: #79c0ff;">2</span>, <span style="color: #79c0ff;">3</span>}<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;incremented := <span style="color: #ff7b72;">make</span>(<span style="color: #ff7b72;">chan</span> <span style="color: #79c0ff;">int</span>, <span style="color: #79c0ff;">3</span>)<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ff7b72;">go</span> <span style="color: #ff7b72;">func</span>() {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ff7b72;">for</span>, n := <span style="color: #ff7b72;">range</span> nums {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;incremented &lt;- n + <span style="color: #79c0ff;">1</span><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;close(incremented)<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;}()<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;doubled := <span style="color: #ff7b72;">make</span>(<span style="color: #ff7b72;">chan</span> <span style="color: #79c0ff;">int</span>, <span style="color: #79c0ff;">3</span>)<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ff7b72;">go</span> <span style="color: #ff7b72;">func</span>() {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ff7b72;">for</span> n := <span style="color: #ff7b72;">range</span> incremented {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;doubled &lt;- <textarea id="user-code" rows="2" placeholder='n * 2' style="color: #79c0ff; font-weight: normal;"></textarea><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;close(doubled)<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;}()<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ff7b72;">for</span> v := <span style="color: #ff7b72;">range</span> doubled {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fmt.Print(v, <span style="color: #a5d6ff;">" "</span>)<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;}<br>
-            }
-        `,
+            <p>Напиши <code class="inline">gen(nums ...int) chan int</code> (отправляет числа, close) и <code class="inline">square(in chan int) chan int</code> (берёт range-ом, шлёт n*n, close). В main просуммируй квадрат(ген(1,2,3)) и напечатай.</p>
+            <p><b>Ожидаемый вывод:</b> <code class="inline">14 = 1+4+9</code></p>`,
+        renderEditor: () => `\n            package main<br><br>import "fmt"<br><br><textarea id="user-code" rows="14" placeholder='func gen(nums ...int) chan int {\n    out := make(chan int)\n    go func() {\n        for _, n := range nums {\n            out &lt;- n\n        }\n        close(out)\n    }()\n    return out\n}\n\nfunc square(in chan int) chan int {\n    out := make(chan int)\n    go func() {\n        for n := range in {\n            out &lt;- n * n\n        }\n        close(out)\n    }()\n    return out\n}\n\nfunc main() {\n    sum := 0\n    for v := range square(gen(1, 2, 3)) {\n        sum += v\n    }\n    fmt.Println(sum)\n}' style="color: #79c0ff; font-weight: normal;"></textarea>\n        `,
         placeholderColor: "#0d1117",
-        buildCode: (input) => `package main\n\nimport "fmt"\n\nfunc main() {\n\tnums := []int{1, 2, 3}\n\tincremented := make(chan int, 3)\n\tgo func() {\n\t\tfor _, n := range nums {\n\t\t\tincremented <- n + 1\n\t\t}\n\t\tclose(incremented)\n\t}()\n\tdoubled := make(chan int, 3)\n\tgo func() {\n\t\tfor n := range incremented {\n\t\t\tdoubled <- ${input}\n\t\t}\n\t\tclose(doubled)\n\t}()\n\tfor v := range doubled {\n\t\tfmt.Print(v, " ")\n\t}\n}`,
-        validate: (stdout) => stdout.trim() === "4 6 8"
+        buildCode: (input) => `package main
+
+import "fmt"
+
+${input}
+`,
+        validate: (stdout) => stdout.trim() === "14"
     },
     {
         id: 73,
         moduleId: 10,
         moduleTitle: "Раздел 10: Паттерны конкурентности",
-        title: "Урок 73: Fan-in — слияние каналов",
+        title: "Урок 73: Fan-in — слияние источников",
         theory: `
             <h2>Урок 73: Fan-in</h2>
-            <p>Если worker pool (урок 71) — это «много ртов к одной тарелке», то <b>fan-in</b> — обратная операция: «несколько тарелок в один рот». Несколько каналов-источников сливаются в один выходной.</p>
-            <p>Простейшая реализация — горoutine, которая по очереди вычитывает каждый вход и перекладывает в общий выход, а в конце <b>обязательно закрывает его</b>.</p>
-            <p>Зачем: у тебя 5 микросервисов стримят данные, а потребитель один — fan-in собирает всё в единый поток.</p>
+            <p>Несколько производителей пишут в один канал. Кто закрывает общий канал? Тот, кто знает, что все закончили: отдельная горутина ждёт <code class="inline">wg.Wait()</code> и делает <code class="inline">close(out)</code>.</p>
             <hr style="border-color: var(--border-color); margin: 20px 0;">
             <h3>Задание:</h3>
-            <p>Первый канал уже переливается в <code class="inline">out</code>. Допиши перекладывание значений из второго канала <code class="inline">c2</code> — сумма всех четырёх чисел (1+2+3+4) должна дать <code class="inline">10</code>.</p>
-        `,
-        renderEditor: () => `
-            <span style="color: #ff7b72;">package</span> main<br><br>
-            <span style="color: #ff7b72;">import</span> <span style="color: #a5d6ff;">"fmt"</span><br><br>
-            <span style="color: #ff7b72;">func</span> <span style="color: #d2a8ff;">main</span>() {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;c1 := <span style="color: #ff7b72;">make</span>(<span style="color: #ff7b72;">chan</span> <span style="color: #79c0ff;">int</span>, <span style="color: #79c0ff;">2</span>)<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;c2 := <span style="color: #ff7b72;">make</span>(<span style="color: #ff7b72;">chan</span> <span style="color: #79c0ff;">int</span>, <span style="color: #79c0ff;">2</span>)<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;c1 &lt;- <span style="color: #79c0ff;">1</span><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;c1 &lt;- <span style="color: #79c0ff;">2</span><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;c2 &lt;- <span style="color: #79c0ff;">3</span><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;c2 &lt;- <span style="color: #79c0ff;">4</span><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;close(c1)<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;close(c2)<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;out := <span style="color: #ff7b72;">make</span>(<span style="color: #ff7b72;">chan</span> <span style="color: #79c0ff;">int</span>, <span style="color: #79c0ff;">4</span>)<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ff7b72;">go</span> <span style="color: #ff7b72;">func</span>() {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ff7b72;">for</span> v := <span style="color: #ff7b72;">range</span> c1 {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;out &lt;- v<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ff7b72;">for</span> v := <span style="color: #ff7b72;">range</span> c2 {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<textarea id="user-code" rows="2" placeholder='out <- v' style="color: #79c0ff; font-weight: normal;"></textarea><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;close(out)<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;}()<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;total := <span style="color: #79c0ff;">0</span><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ff7b72;">for</span> v := <span style="color: #ff7b72;">range</span> out {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;total += v<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;}<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;fmt.Println(total)<br>
-            }
-        `,
+            <p>3 горутины шлют в out числа: i-я отправляет start и start+1, где start = i*2 (сохрани i параметром! иначе гонка за переменную цикла). Закрывающая горутина ждёт WaitGroup. main суммирует и печатает.</p>
+            <p><b>Ожидаемый вывод:</b> <code class="inline">27 = 2+3+4+5+6+7</code></p>`,
+        renderEditor: () => `\n            package main<br><br>import (<br>&nbsp;&nbsp;&nbsp;&nbsp;"fmt"<br>&nbsp;&nbsp;&nbsp;&nbsp;"sync"<br>)<br><br><textarea id="user-code" rows="14" placeholder='func main() {\n    out := make(chan int, 6)\n    var wg sync.WaitGroup\n    for s := 1; s &lt;= 3; s++ {\n        wg.Add(1)\n        go func(start int) {\n            defer wg.Done()\n            for i := start; i &lt;= start+1; i++ {\n                out &lt;- i\n            }\n        }(s * 2)\n    }\n    go func() {\n        wg.Wait()\n        close(out)\n    }()\n    sum := 0\n    for v := range out {\n        sum += v\n    }\n    fmt.Println(sum)\n}' style="color: #79c0ff; font-weight: normal;"></textarea>\n        `,
         placeholderColor: "#0d1117",
-        buildCode: (input) => `package main\n\nimport "fmt"\n\nfunc main() {\n\tc1 := make(chan int, 2)\n\tc2 := make(chan int, 2)\n\tc1 <- 1\n\tc1 <- 2\n\tc2 <- 3\n\tc2 <- 4\n\tclose(c1)\n\tclose(c2)\n\tout := make(chan int, 4)\n\tgo func() {\n\t\tfor v := range c1 {\n\t\t\tout <- v\n\t\t}\n\t\tfor v := range c2 {\n\t\t\t${input}\n\t\t}\n\t\tclose(out)\n\t}()\n\ttotal := 0\n\tfor v := range out {\n\t\ttotal += v\n\t}\n\tfmt.Println(total)\n}`,
-        validate: (stdout) => stdout.trim() === "10"
+        buildCode: (input) => `package main
+
+import (
+	"fmt"
+	"sync"
+)
+
+${input}
+`,
+        validate: (stdout) => stdout.trim() === "27"
     },
     {
         id: 74,
         moduleId: 10,
         moduleTitle: "Раздел 10: Паттерны конкурентности",
-        title: "Урок 74: sync/atomic — молниеносный счётчик",
+        title: "Урок 74: sync/atomic",
         theory: `
-            <h2>Урок 74: Атомарные операции</h2>
-            <p>Мьютекс (урок 55) надёжен, но дорог: блокировка/разблокировка — это системные вызовы и переключение контекста. Для примитивных операций вида «изменить число» есть легче — <code class="inline">sync/atomic</code>.</p>
-            <p><code class="inline">atomic.AddInt64(&counter, 1)</code> выполняет инкремент одной машинной инструкцией — гонка невозможна в принципе, без всяких замков.</p>
-            <p>Что ещё есть: <code class="inline">atomic.LoadInt64</code>, <code class="inline">atomic.StoreInt64</code>, <code class="inline">atomic.CompareAndSwap</code>. Но помни: atomic защищает только одну операцию, а не логическую транзакцию из нескольких шагов.</p>
+            <h2>Урок 74: Атомики</h2>
+            <p><code class="inline">atomic.AddInt64(&amp;counter, 1)</code> — инкремент одной машинной операцией, замок не нужен. Переменная должна быть <code class="inline">int64</code>.</p>
             <hr style="border-color: var(--border-color); margin: 20px 0;">
             <h3>Задание:</h3>
-            <p>1000 горутин должны атомарно увеличить <code class="inline">counter</code>. Допиши имя функции из пакета atomic — ответ программы: <code class="inline">1000</code>.</p>
-        `,
-        renderEditor: () => `
-            <span style="color: #ff7b72;">package</span> main<br><br>
-            <span style="color: #ff7b72;">import</span> (<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #a5d6ff;">"fmt"</span><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #a5d6ff;">"sync"</span><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #a5d6ff;">"sync/atomic"</span><br>
-            )<br><br>
-            <span style="color: #ff7b72;">func</span> <span style="color: #d2a8ff;">main</span>() {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ff7b72;">var</span> counter <span style="color: #79c0ff;">int64</span><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ff7b72;">var</span> wg sync.WaitGroup<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ff7b72;">for</span> i := <span style="color: #79c0ff;">0</span>; i &lt; <span style="color: #79c0ff;">1000</span>; i++ {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;wg.Add(<span style="color: #79c0ff;">1</span>)<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ff7b72;">go</span> <span style="color: #ff7b72;">func</span>() {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ff7b72;">defer</span> wg.Done()<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;atomic.<textarea id="user-code" rows="2" placeholder='AddInt64' style="color: #79c0ff; font-weight: normal;"></textarea>(&amp;counter, <span style="color: #79c0ff;">1</span>)<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}()<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;}<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;wg.Wait()<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;fmt.Println(counter)<br>
-            }
-        `,
+            <p>В main: <code class="inline">var counter int64</code>; 1000 горутин (WaitGroup) делают atomic.AddInt64(&amp;counter, 1). После Wait напечатай counter.</p>
+            <p><b>Ожидаемый вывод:</b> <code class="inline">1000</code></p>`,
+        renderEditor: () => `\n            package main<br><br>import (<br>&nbsp;&nbsp;&nbsp;&nbsp;"fmt"<br>&nbsp;&nbsp;&nbsp;&nbsp;"sync"<br>&nbsp;&nbsp;&nbsp;&nbsp;"sync/atomic"<br>)<br><br><textarea id="user-code" rows="14" placeholder='func main() {\n    var counter int64\n    var wg sync.WaitGroup\n    for i := 0; i &lt; 1000; i++ {\n        wg.Add(1)\n        go func() {\n            defer wg.Done()\n            atomic.AddInt64(&amp;counter, 1)\n        }()\n    }\n    wg.Wait()\n    fmt.Println(counter)\n}' style="color: #79c0ff; font-weight: normal;"></textarea>\n        `,
         placeholderColor: "#0d1117",
-        buildCode: (input) => `package main\n\nimport (\n\t"fmt"\n\t"sync"\n\t"sync/atomic"\n)\n\nfunc main() {\n\tvar counter int64\n\tvar wg sync.WaitGroup\n\tfor i := 0; i < 1000; i++ {\n\t\twg.Add(1)\n\t\tgo func() {\n\t\t\tdefer wg.Done()\n\t\t\tatomic.${input}(&counter, 1)\n\t\t}()\n\t}\n\twg.Wait()\n\tfmt.Println(counter)\n}`,
+        buildCode: (input) => `package main
+
+import (
+	"fmt"
+	"sync"
+	"sync/atomic"
+)
+
+${input}
+`,
         validate: (stdout) => stdout.trim() === "1000"
     },
     {
         id: 75,
         moduleId: 10,
         moduleTitle: "Раздел 10: Паттерны конкурентности",
-        title: "Урок 75: Rate Limiter — очередь билетов",
+        title: "Урок 75: Rate limiter — жетоны",
         theory: `
-            <h2>Урок 75: Ограничитель частоты</h2>
-            <p>API защищают от перегруза: не больше N одновременных запросов. Идиоматичный приём в Go — <b>канал-семафор</b>: буферизованный канал, заранее наполненный «билетами».</p>
-            <p>Каждый, кто хочет работать, забирает билет <code class="inline">&lt;-tokens</code>; освободился — вернул <code class="inline">tokens &lt;- struct{}{}</code>. Кто без билета — тому отказ (<code class="inline">select + default</code> из урока 54).</p>
-            <p><code class="inline">struct{}{}</code> — пустая структура размером 0 байт: сигнал без данных, идеальный «жетон».</p>
+            <h2>Урок 75: Пропускная способность</h2>
+            <p>Буферизованный канал как «касса с билетами»: попытка положить жетон при полной очереди через select+default не блокируется, а отказывает. Так ограничивают одновременные запросы.</p>
             <hr style="border-color: var(--border-color); margin: 20px 0;">
             <h3>Задание:</h3>
-            <p>В «кассе» 3 билета, заходов 10. Цикл уже посчитал в <code class="inline">allowed</code>, сколько запросов получили пропуск. Выведи это число — ответ <code class="inline">3</code>.</p>
-        `,
-        renderEditor: () => `
-            <span style="color: #ff7b72;">package</span> main<br><br>
-            <span style="color: #ff7b72;">import</span> <span style="color: #a5d6ff;">"fmt"</span><br><br>
-            <span style="color: #ff7b72;">func</span> <span style="color: #d2a8ff;">main</span>() {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;tokens := <span style="color: #ff7b72;">make</span>(<span style="color: #ff7b72;">chan</span> <span style="color: #79c0ff;">struct</span>{}, <span style="color: #79c0ff;">3</span>)<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;tokens &lt;- <span style="color: #ff7b72;">struct</span>{}{}<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;tokens &lt;- <span style="color: #ff7b72;">struct</span>{}{}<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;tokens &lt;- <span style="color: #ff7b72;">struct</span>{}{}<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;allowed := <span style="color: #79c0ff;">0</span><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ff7b72;">for</span> i := <span style="color: #79c0ff;">0</span>; i &lt; <span style="color: #79c0ff;">10</span>; i++ {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ff7b72;">select</span> {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ff7b72;">case</span> &lt;-tokens:<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;allowed++<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ff7b72;">default</span>:<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;}<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<textarea id="user-code" rows="2" placeholder='fmt.Println(allowed)' style="color: #79c0ff; font-weight: normal;"></textarea><br>
-            }
-        `,
+            <p>В main: tokens := make(chan int, 3); цикл из 5 попыток: select <code class="inline">case tokens &lt;- i: allowed++</code>, default — ничего. Напечатай allowed.</p>
+            <p><b>Ожидаемый вывод:</b> <code class="inline">3 (билетов больше не было)</code></p>`,
+        renderEditor: () => `\n            package main<br><br>import "fmt"<br><br><textarea id="user-code" rows="14" placeholder='func main() {\n    tokens := make(chan int, 3)\n    allowed := 0\n    for i := 0; i &lt; 5; i++ {\n        select {\n        case tokens &lt;- i:\n            allowed++\n        default:\n        }\n    }\n    fmt.Println(allowed)\n}' style="color: #79c0ff; font-weight: normal;"></textarea>\n        `,
         placeholderColor: "#0d1117",
-        buildCode: (input) => `package main\n\nimport "fmt"\n\nfunc main() {\n\ttokens := make(chan struct{}, 3)\n\ttokens <- struct{}{}\n\ttokens <- struct{}{}\n\ttokens <- struct{}{}\n\tallowed := 0\n\tfor i := 0; i < 10; i++ {\n\t\tselect {\n\t\tcase <-tokens:\n\t\t\tallowed++\n\t\tdefault:\n\t\t}\n\t}\n\t${input}\n}`,
+        buildCode: (input) => `package main
+
+import "fmt"
+
+${input}
+`,
         validate: (stdout) => stdout.trim() === "3"
     },
     {
         id: 76,
         moduleId: 10,
         moduleTitle: "Раздел 10: Паттерны конкурентности",
-        title: "Урок 76: Generator — функция, производящая поток",
+        title: "Урок 76: Генератор потока",
         theory: `
-            <h2>Урок 76: Генераторы</h2>
-            <p>Функция-генератор возвращает не значение, а <b>канал</b>, из которого будет капать поток данных. Вызывающий просто делает <code class="inline">for range</code> по этому каналу — как по бесконечному списку, только ленивому.</p>
-            <pre><code class="block">func gen(nums ...int) &lt;-chan int {
-    out := make(chan int)
-    go func() {
-        for _, n := range nums {
-            out &lt;- n
-        }
-        close(out)
-    }()
-    return out
-}</code></pre>
-            <p>Направление <code class="inline">&lt;-chan int</code> в сигнатуре — подсказка компилятору и людям: этот канал можно только читать. Забыл генератор закрыть выход — потребитель зависнет навечно.</p>
+            <h2>Урок 76: Функция-генератор</h2>
+            <p>Генератор возвращает канал и сам наполняет его из горутины, в конце <b>обязательно</b> close — иначе range потребителя не закончится никогда.</p>
             <hr style="border-color: var(--border-color); margin: 20px 0;">
             <h3>Задание:</h3>
-            <p>Тело генератора почти готово: цикл пишет числа в <code class="inline">out</code>. Не хватает финального шага, иначе main зависнет в range навсегда. Допиши его — вывод: <code class="inline">2 3 4</code>.</p>
-        `,
-        renderEditor: () => `
-            <span style="color: #ff7b72;">package</span> main<br><br>
-            <span style="color: #ff7b72;">import</span> <span style="color: #a5d6ff;">"fmt"</span><br><br>
-            <span style="color: #ff7b72;">func</span> <span style="color: #d2a8ff;">gen</span>(nums ...<span style="color: #79c0ff;">int</span>) &lt;-<span style="color: #ff7b72;">chan</span> <span style="color: #79c0ff;">int</span> {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;out := <span style="color: #ff7b72;">make</span>(<span style="color: #ff7b72;">chan</span> <span style="color: #79c0ff;">int</span>)<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ff7b72;">go</span> <span style="color: #ff7b72;">func</span>() {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ff7b72;">for</span>, n := <span style="color: #ff7b72;">range</span> nums {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;out &lt;- n<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<textarea id="user-code" rows="2" placeholder='close(out)' style="color: #79c0ff; font-weight: normal;"></textarea><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;}()<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ff7b72;">return</span> out<br>
-            }<br><br>
-            <span style="color: #ff7b72;">func</span> <span style="color: #d2a8ff;">main</span>() {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ff7b72;">for</span> n := <span style="color: #ff7b72;">range</span> gen(<span style="color: #79c0ff;">2</span>, <span style="color: #79c0ff;">3</span>, <span style="color: #79c0ff;">4</span>) {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fmt.Print(n, <span style="color: #a5d6ff;">" "</span>)<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;}<br>
-            }
-        `,
+            <p>Напиши <code class="inline">func counter(n int) chan int</code>: шлёт 1..n, close. В main суммируй range по counter(5) и напечатай.</p>
+            <p><b>Ожидаемый вывод:</b> <code class="inline">15 = 1+2+3+4+5</code></p>`,
+        renderEditor: () => `\n            package main<br><br>import "fmt"<br><br><textarea id="user-code" rows="14" placeholder='func counter(n int) chan int {\n    out := make(chan int)\n    go func() {\n        for i := 1; i &lt;= n; i++ {\n            out &lt;- i\n        }\n        close(out)\n    }()\n    return out\n}\n\nfunc main() {\n    sum := 0\n    for v := range counter(5) {\n        sum += v\n    }\n    fmt.Println(sum)\n}' style="color: #79c0ff; font-weight: normal;"></textarea>\n        `,
         placeholderColor: "#0d1117",
-        buildCode: (input) => `package main\n\nimport "fmt"\n\nfunc gen(nums ...int) <-chan int {\n\tout := make(chan int)\n\tgo func() {\n\t\tfor _, n := range nums {\n\t\t\tout <- n\n\t\t}\n\t\t${input}\n\t}()\n\treturn out\n}\n\nfunc main() {\n\tfor n := range gen(2, 3, 4) {\n\t\tfmt.Print(n, " ")\n\t}\n}`,
-        validate: (stdout) => stdout.trim() === "2 3 4",
-        errorMessage: "Все горутины уснули? range по открытому каналу ждёт вечно — генератор обязан закрыть выход."
+        buildCode: (input) => `package main
+
+import "fmt"
+
+${input}
+`,
+        validate: (stdout) => stdout.trim() === "15",
+        errorMessage: "Программа зависла? range по каналу ждёт вечно — генератор обязан сделать close(out)."
     },
     {
         id: 77,
         moduleId: 10,
         moduleTitle: "Раздел 10: Паттерны конкурентности",
-        title: "Урок 77: Timeout — select и time.After",
+        title: "Урок 77: Таймаут через time.After",
         theory: `
-            <h2>Урок 77: Таймауты</h2>
-            <p>Внешний сервис может висеть вечно, а твой API должен отвечать быстро. Эталонный приём Go — <code class="inline">select</code> с кейсом <code class="inline">time.After(100 * time.Millisecond)</code>: сработает то, что наступит раньше.</p>
-            <pre><code class="block">select {
-case res := &lt;-slowAPI:
-    // успели!
-case &lt;-time.After(100 * time.Millisecond):
-    // время вышло
-}</code></pre>
-            <p>В реальных серверах вместо time.After используют <code class="inline">context.Context</code> (внутренняя работа — тот же select с таймером, но с отменой сразу всех).</p>
+            <h2>Урок 77: Гонка с таймером</h2>
+            <p><code class="inline">select</code> из рабочего канала и <code class="inline">&lt;-time.After(2 * time.Second)</code>: выигрывает тот, кто поспел. Долгая операция (50ms) успевает раньше таймаута.</p>
             <hr style="border-color: var(--border-color); margin: 20px 0;">
             <h3>Задание:</h3>
-            <p>API «думает» 2 секунды, таймаут — 100 миллисекунд. В ветке timeout напечатай строку <code class="inline">"timeout"</code> — она и появится на экране.</p>
-        `,
-        renderEditor: () => `
-            <span style="color: #ff7b72;">package</span> main<br><br>
-            <span style="color: #ff7b72;">import</span> (<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #a5d6ff;">"fmt"</span><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #a5d6ff;">"time"</span><br>
-            )<br><br>
-            <span style="color: #ff7b72;">func</span> <span style="color: #d2a8ff;">main</span>() {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;slowAPI := <span style="color: #ff7b72;">make</span>(<span style="color: #ff7b72;">chan</span> <span style="color: #79c0ff;">string</span>)<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ff7b72;">go</span> <span style="color: #ff7b72;">func</span>() {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;time.Sleep(<span style="color: #79c0ff;">2</span> * time.Second)<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;slowAPI &lt;- <span style="color: #a5d6ff;">"response"</span><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;}()<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ff7b72;">select</span> {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ff7b72;">case</span> res := &lt;-slowAPI:<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fmt.Println(res)<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ff7b72;">case</span> &lt;-time.After(<span style="color: #79c0ff;">100</span> * time.Millisecond):<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fmt.Println(<textarea id="user-code" rows="2" placeholder='"timeout"' style="color: #79c0ff; font-weight: normal;"></textarea>)<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;}<br>
-            }
-        `,
+            <p>В main: горутина спит 50ms и шлёт «finished» в канал done; select ждёт done или time.After(2 секунды) с печатью «timeout». Запусти и убедись — печатается ответ.</p>
+            <p><b>Ожидаемый вывод:</b> <code class="inline">finished</code></p>`,
+        renderEditor: () => `\n            package main<br><br>import (<br>&nbsp;&nbsp;&nbsp;&nbsp;"fmt"<br>&nbsp;&nbsp;&nbsp;&nbsp;"time"<br>)<br><br><textarea id="user-code" rows="14" placeholder='func main() {\n    done := make(chan string)\n    go func() {\n        time.Sleep(50 * time.Millisecond)\n        done &lt;- &quot;finished&quot;\n    }()\n    select {\n    case msg := &lt;-done:\n        fmt.Println(msg)\n    case &lt;-time.After(2 * time.Second):\n        fmt.Println(&quot;timeout&quot;)\n    }\n}' style="color: #79c0ff; font-weight: normal;"></textarea>\n        `,
         placeholderColor: "#0d1117",
-        buildCode: (input) => `package main\n\nimport (\n\t"fmt"\n\t"time"\n)\n\nfunc main() {\n\tslowAPI := make(chan string)\n\tgo func() {\n\t\ttime.Sleep(2 * time.Second)\n\t\tslowAPI <- "response"\n\t}()\n\tselect {\n\tcase res := <-slowAPI:\n\t\tfmt.Println(res)\n\tcase <-time.After(100 * time.Millisecond):\n\t\tfmt.Println(${input})\n\t}\n}`,
-        validate: (stdout) => stdout.trim() === "timeout"
+        buildCode: (input) => `package main
+
+import (
+	"fmt"
+	"time"
+)
+
+${input}
+`,
+        validate: (stdout) => stdout.trim() === "finished"
     },
     {
         id: 78,
         moduleId: 10,
         moduleTitle: "Раздел 10: Паттерны конкурентности",
-        title: "Урок 78: Отмена через close — широковещательный сигнал",
+        title: "Урок 78: Отмена всех — broadcast по close",
         theory: `
-            <h2>Урок 78: Broadcast-отмена</h2>
-            <p>Секрет close, о котором молчат в туториалах: закрытие канала будит <b>сразу всех</b> ожидающих. Чтение из закрытого канала мгновенно возвращает zero-value — это и есть сигнал «стоп».</p>
-            <p>Паттерн: создаём <code class="inline">done := make(chan struct{})</code>, каждая горутина сидит в select на <code class="inline">&lt;-done</code>, а организатор в момент выключения делает единственный <code class="inline">close(done)</code> — и вся армия останавливается.</p>
-            <p>Точно так же под капотом работает <code class="inline">context.WithCancel</code> — просто done-канал спрятан в struct.</p>
+            <h2>Урок 78: Wide-вещание</h2>
+            <p>Чтение с закрытого канала мгновенно возвращает zero-value — поэтому один <code class="inline">close(done)</code> будит ВСЕХ, кто ждал <code class="inline">&lt;-done</code>. Так работает отмена в context.</p>
             <hr style="border-color: var(--border-color); margin: 20px 0;">
             <h3>Задание:</h3>
-            <p>Три горутины ждут сигнала в <code class="inline">&lt;-done</code>. Без сигнала main уйдёт в вечный Wait (deadlock). Отдай сигнал остановки — напиши команду, и программа печатает <code class="inline">all stopped</code>.</p>
-        `,
-        renderEditor: () => `
-            <span style="color: #ff7b72;">package</span> main<br><br>
-            <span style="color: #ff7b72;">import</span> (<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #a5d6ff;">"fmt"</span><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #a5d6ff;">"sync"</span><br>
-            )<br><br>
-            <span style="color: #ff7b72;">func</span> <span style="color: #d2a8ff;">main</span>() {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;done := <span style="color: #ff7b72;">make</span>(<span style="color: #ff7b72;">chan</span> <span style="color: #79c0ff;">struct</span>{})<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ff7b72;">var</span> wg sync.WaitGroup<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ff7b72;">for</span> i := <span style="color: #79c0ff;">1</span>; i &lt;= <span style="color: #79c0ff;">3</span>; i++ {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;wg.Add(<span style="color: #79c0ff;">1</span>)<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ff7b72;">go</span> <span style="color: #ff7b72;">func</span>() {<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #ff7b72;">defer</span> wg.Done()<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;-done<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}()<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;}<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;<textarea id="user-code" rows="2" placeholder='close(done)' style="color: #79c0ff; font-weight: normal;"></textarea><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;wg.Wait()<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;fmt.Println(<span style="color: #a5d6ff;">"all stopped"</span>)<br>
-            }
-        `,
+            <p>3 горутины (WaitGroup) ждут &lt;-done, затем шлют 1 в stopped. main делает close(done), wg.Wait() и печатает сумму трёх приёмов из stopped.</p>
+            <p><b>Ожидаемый вывод:</b> <code class="inline">3</code></p>`,
+        renderEditor: () => `\n            package main<br><br>import (<br>&nbsp;&nbsp;&nbsp;&nbsp;"fmt"<br>&nbsp;&nbsp;&nbsp;&nbsp;"sync"<br>)<br><br><textarea id="user-code" rows="14" placeholder='func main() {\n    done := make(chan struct{})\n    var wg sync.WaitGroup\n    stopped := make(chan int, 3)\n    for i := 0; i &lt; 3; i++ {\n        wg.Add(1)\n        go func() {\n            defer wg.Done()\n            &lt;-done\n            stopped &lt;- 1\n        }()\n    }\n    close(done)\n    wg.Wait()\n    fmt.Println(&lt;-stopped + &lt;-stopped + &lt;-stopped)\n}' style="color: #79c0ff; font-weight: normal;"></textarea>\n        `,
         placeholderColor: "#0d1117",
-        buildCode: (input) => `package main\n\nimport (\n\t"fmt"\n\t"sync"\n)\n\nfunc main() {\n\tdone := make(chan struct{})\n\tvar wg sync.WaitGroup\n\tfor i := 1; i <= 3; i++ {\n\t\twg.Add(1)\n\t\tgo func() {\n\t\t\tdefer wg.Done()\n\t\t\t<-done\n\t\t}()\n\t}\n\t${input}\n\twg.Wait()\n\tfmt.Println("all stopped")\n}`,
-        validate: (stdout) => stdout.trim() === "all stopped",
-        errorMessage: "Deadlock: горутины так и ждут сигнала. Открой кран — закрой канал."
+        buildCode: (input) => `package main
+
+import (
+	"fmt"
+	"sync"
+)
+
+${input}
+`,
+        validate: (stdout) => stdout.trim() === "3",
+        errorMessage: "Deadlock: горутины так и ждут сигнала. Открой кран — закрой канал done."
     }
 ];
